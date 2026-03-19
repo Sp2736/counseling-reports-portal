@@ -14,7 +14,7 @@ export async function analyzeSWOTWithAI(rawText: string) {
     model: "gemini-2.5-flash",
     generationConfig: {
       responseMimeType: "application/json",
-    }
+    },
   });
 
   const systemPrompt = `
@@ -62,9 +62,21 @@ export async function analyzeSWOTWithAI(rawText: string) {
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const jsonString = response.text();
-    
-    return JSON.parse(jsonString);
+    let jsonString = response.text();
+
+    // THE FIX: Strip out the markdown code block markers that Gemini sometimes adds
+    jsonString = jsonString
+      .replace(/```json/gi, "")
+      .replace(/```/g, "")
+      .trim();
+
+    try {
+      return JSON.parse(jsonString);
+    } catch (parseError) {
+      // If it still fails, log the exact string so we can see what Gemini messed up
+      console.error("Failed to parse the cleaned JSON:", jsonString);
+      throw new Error("AI returned malformed data.");
+    }
   } catch (error) {
     console.error("AI Generation Error:", error);
     throw new Error("Failed to generate AI report from the provided text.");
