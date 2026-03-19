@@ -1,0 +1,21 @@
+the login from different student ID also said that the ID already exists.
+the pages after logging in do not redirect to their respective pages.4
+
+UI/UX for student:
+
+~ they have option to upload docx, and update their profile
+~ they have a section wherein they can see (only see, not edit) all their reports submitted so far and also view them by opening in google docs (because docx can be easily opened in google docs).
+~ they should also have an option to cancel an upload in case of a mistake, so a cross button too. only for the ones which are not reviewed and just uploaded.
+~ they can see whether their reports are reviewed or pending to be reviewed.
+~ once a report is reviewed, their original submitted report is replaced by the report created by counselor for that particular report
+~ the reviewed reports have options to view and print (export to pdf) so that students can export them to pdf for taking out print.
+~ make proper dashboard so that student can see when to upload next report, i.e. like due date
+~ if counselor cancels a report from his end, the student should be shown that report was cancelled, along with the comment made by the counselor for it, stating the reason
+
+UI/UX for counselor:
+
+~ they can view, cancel, manually or use ai for report. if cancel, then it should pop a comment box wherein counselor should write the reason to cancel the report
+~ they can update their profile and counseling range info
+~ they can see profiles of all students in their counseling, and can open a profile to view all reports submitted by that student
+~ in waiting list, the option for generate all with AI should only be there if it is seamlessly possible to generate reports individually for each student. else, ai button should be clicked individually for each student and hence the generate all button should be removed
+~ make a dashboard for the counselor to see total students, total submitted, total submitted period wise (for e.g., in a semester if 4 reports are to be submitted, then the count for all those 4 times should be separately seen)
