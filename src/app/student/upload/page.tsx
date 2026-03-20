@@ -105,7 +105,7 @@ export default function StudentUploadPage() {
           {uploadStatus === "success" && (
             <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-3">
               <CheckCircle className="h-5 w-5 text-green-500" />
-              <p className="text-sm text-green-700 font-medium">File uploaded successfully! It is now pending AI analysis.</p>
+              <p className="text-sm text-green-700 font-medium">File uploaded successfully!</p>
             </div>
           )}
 
