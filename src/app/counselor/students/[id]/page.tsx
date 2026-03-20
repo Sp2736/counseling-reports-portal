@@ -67,7 +67,7 @@ export default function CounselorStudentHistoryPage() {
         {/* Submission History Table */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-8">
           <div className="p-6 border-b border-gray-100 bg-gray-50">
-            <h3 className="text-xl font-bold text-gray-800">Complete Submission History</h3>
+            <h3 className="text-xl font-bold text-gray-800">Reviewed Submission History</h3>
           </div>
           
           <div className="overflow-x-auto">
@@ -83,20 +83,17 @@ export default function CounselorStudentHistoryPage() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {records.length === 0 ? (
-                  <tr><td colSpan={5} className="p-8 text-center text-gray-500">This student has not submitted any reports yet.</td></tr>
+                  <tr><td colSpan={5} className="p-8 text-center text-gray-500">This student has no reviewed reports yet.</td></tr>
                 ) : (
                   records.map((record) => (
                     <tr key={record._id} className="hover:bg-gray-50 transition-colors">
                       <td className="p-4 font-medium text-gray-900">Period {record.report_period || 1}</td>
                       <td className="p-4 text-gray-600">{new Date(record.createdAt).toLocaleDateString()}</td>
                       <td className="p-4">
-                        {record.status === 'Needs_Review' && <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Pending Your Review</span>}
-                        {record.status === 'Reviewed_Completed' && <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Completed</span>}
-                        {record.status === 'Cancelled_By_Counselor' && <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Rejected</span>}
-                        {record.status === 'Cancelled_By_Student' && <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Withdrawn</span>}
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Completed</span>
                       </td>
                       <td className="p-4">
-                        {record.status === "Reviewed_Completed" && record.counselor_review?.final_risk_level ? (
+                        {record.counselor_review?.final_risk_level ? (
                           <span className={`font-medium ${record.counselor_review.final_risk_level === 'High' ? 'text-red-600' : 'text-gray-900'}`}>
                             {record.counselor_review.final_risk_level}
                           </span>
@@ -105,14 +102,12 @@ export default function CounselorStudentHistoryPage() {
                         )}
                       </td>
                       <td className="p-4 text-right">
-                        {(record.status === 'Needs_Review' || record.status === 'Reviewed_Completed') && (
-                          <Link 
-                            href={`/counselor/record/${record._id}`} 
-                            className="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-3 py-1.5 rounded-md"
-                          >
-                            {record.status === 'Needs_Review' ? 'Review Now' : 'View Report'}
-                          </Link>
-                        )}
+                        <Link 
+                          href={`/counselor/record/${record._id}`} 
+                          className="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-3 py-1.5 rounded-md"
+                        >
+                          View Report
+                        </Link>
                       </td>
                     </tr>
                   ))

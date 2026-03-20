@@ -21,8 +21,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     const student = await StudentProfile.findById(id).lean();
     if (!student) return NextResponse.json({ error: "Student not found" }, { status: 404 });
 
-    // 2. Get all their past counseling records, newest first
-    const records = await CounselingRecord.find({ student: id })
+    // 2. Get all their past counseling records that have been reviewed, newest first
+    const records = await CounselingRecord.find({ student: id, status: "Reviewed_Completed" })
       .sort({ createdAt: -1 })
       .lean();
 
