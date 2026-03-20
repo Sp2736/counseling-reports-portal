@@ -15,6 +15,11 @@ export async function analyzeSWOTWithAI(text: string) {
     You are an expert academic counselor and psychologist.
     Analyze the following student text (which may be a SWOT analysis or general thoughts).
     Extract and structure the data into the following JSON format strictly. Do not add markdown formatting, just the raw JSON.
+    
+    CRITICAL INSTRUCTION FOR "counselor_findings":
+    It must contain a maximum of 3 paragraphs. Each paragraph must be 3-4 sentences long. 
+    Use plain text only. Separate paragraphs with a double newline (\\n\\n). 
+    Do NOT include any captions, subheadings, bold text, or titles within the findings.
 
     {
       "swot_input": {

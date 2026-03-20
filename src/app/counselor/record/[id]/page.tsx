@@ -39,7 +39,7 @@ export default function CounselorRecordReview({ params }: { params: Promise<{ id
     const ai = record.ai_analysis;
     setRiskLevel(ai.risk_prediction?.risk_level || "Low");
     setActionPlan(
-      `AI Counselor Findings:\n${ai.generated_report?.counselor_findings || "N/A"}\n\n` +
+      `Counselor Findings:\n${ai.generated_report?.counselor_findings || "N/A"}\n\n` +
       `Recommended Interventions:\n${ai.generated_report?.priority_interventions?.join("\n- ") || "N/A"}`
     );
   };
