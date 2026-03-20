@@ -71,7 +71,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Analysis Complete!", recordId: newRecord._id }, { status: 200 });
 
   } catch (error: any) {
-    console.error("Upload/AI Error:", error);
-    return NextResponse.json({ error: error.message || "An error occurred during processing." }, { status: 500 });
+    // Keep the detailed error in the server console for the developer
+    console.error("Document Processing Error:", error);
+    
+    // Return a clean, sanitized message to the student
+    return NextResponse.json({ error: "An error occurred while processing your document. Please try again." }, { status: 500 });
   }
 }

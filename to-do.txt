@@ -4,7 +4,11 @@
 
 ~ in the counselor dashboard, the animation for 'Auto-Fill Document' should be improved
 
-~ in raw student text section, there is nothing available. is it to be kept empty or will there some data be seen? and it data is to be shown, then in which case?
+~ in raw student text section, there is nothing available. is it to be kept empty or will there some data be seen? and if data is to be shown there, then in which case?
+
+~ remove 'ai' from the fail msg while student uploads the file and it fails.
+
+~ when the student wants to cancel a submission from the dashboard after uploading, it fails to cancel that.
 
 ~ in the reviewed docx, the counselor name should be updated in the footer in all caps. e.g. '<counselor-name> (Counselor)'
 
