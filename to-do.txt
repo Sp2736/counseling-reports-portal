@@ -1,0 +1,23 @@
+remove 'ai analysis' from the msg after student submits the docx file.
+
+the entry in student roster should be viewed only after counselor has submitted back the review of student, so it should behave like view-only submission history.
+
+in the counselor dashboard, the animation for 'Auto-Fill Document' should be improved
+
+in raw student text section, there is nothing available. is it to be kept empty or will there some data be seen? and it data is to be shown, then in which case?
+
+in the reviewed docx, the counselor name should be updated in the footer in all caps. e.g. '<counselor-name> (Counselor)'
+
+The counselor findings must contain max 3 paras of 3-4 lines each, and no captions or subheadings should be included. send only plain text.
+
+in the docx file's footer, the bottom left section containing system, generation logs, etc, these things should be removed and space for student's signature should be added.
+
+when the student prints the reviewsed docx, only the report should be exported with its content, and it should not include anything else from the DOM.
+
+the format of report exported should be same as the word file uploaded earlier.
+
+in counselor dashboard, when a docx is rejected, the comment box's placeholder text is light and not seen properly. also the typed text is not seen properly.
+
+the student login success should redirect to dashboard, not upload module. also, when counselor rejects a report and sends a message about the same, there is no functionality from student side to view that message. add an eye button and functionality to view the message of reason for rejection.
+
+(egov ss - main page full, navbar, side panel, colour palette, (charusat header) )
