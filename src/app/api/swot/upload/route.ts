@@ -1,12 +1,11 @@
 // src/app/api/swot/upload/route.ts
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-// Use relative paths if @/ causes build errors
-import { authOptions } from "../../../api/auth/[...nextauth]/route";
-import connectToDatabase from "../../../../lib/mongodb";
-import { StudentProfile } from "../../../../models/StudentProfile";
-import { CounselingRecord } from "../../../../models/CounselingRecord";
-import { analyzeSWOTWithAI } from "../../../../lib/ai-service";
+import { authOptions } from "@/src/app/api/auth/[...nextauth]/route";
+import connectToDatabase from "@/src/lib/mongodb";
+import { StudentProfile } from "@/src/models/StudentProfile";
+import { CounselingRecord } from "@/src/models/CounselingRecord";
+import { analyzeSWOTWithAI } from "@/src/lib/ai-service";
 import mammoth from "mammoth";
 
 export async function POST(req: Request) {
@@ -51,16 +50,25 @@ export async function POST(req: Request) {
     // 3. Send the clean text string directly to Gemini
     const aiResult = await analyzeSWOTWithAI(rawText);
 
-    // 4. Save the AI's output to the database
+    // 4. Calculate dynamic report period (1 through 4)
+    const lastRecord = await CounselingRecord.findOne({ student: studentProfile._id }).sort({ createdAt: -1 });
+    let currentPeriod = 1;
+    if (lastRecord && lastRecord.report_period) {
+       currentPeriod = lastRecord.report_period < 4 ? lastRecord.report_period + 1 : 1;
+    }
+
+    // 5. Save the AI's output AND the raw text to the database
     const newRecord = await CounselingRecord.create({
       student: studentProfile._id,
       assignedCounselor: studentProfile.assignedCounselor,
       status: "Needs_Review", 
+      report_period: currentPeriod,
+      original_submitted_text: rawText, // Ensures the counselor can see the student's actual words
       swot_input: aiResult.swot_input,
       ai_analysis: aiResult.ai_analysis,
     });
 
-    return NextResponse.json({ message: "AI Analysis Complete!", recordId: newRecord._id }, { status: 200 });
+    return NextResponse.json({ message: "Analysis Complete!", recordId: newRecord._id }, { status: 200 });
 
   } catch (error: any) {
     console.error("Upload/AI Error:", error);

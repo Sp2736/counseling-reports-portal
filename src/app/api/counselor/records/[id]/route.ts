@@ -6,9 +6,11 @@ import connectToDatabase from "@/src/lib/mongodb";
 import { CounselingRecord } from "@/src/models/CounselingRecord";
 import { StudentProfile } from "@/src/models/StudentProfile";
 
-// GET: Fetch the specific record for the counselor
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const resolvedParams = await params;
+    const recordId = resolvedParams.id;
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.id || session.user.role !== "counselor") {
       return NextResponse.json({ error: "Unauthorized access" }, { status: 403 });
@@ -16,7 +18,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
     await connectToDatabase();
 
-    const record = await CounselingRecord.findById(params.id)
+    const record = await CounselingRecord.findById(recordId)
       .populate({
         path: 'student',
         model: StudentProfile,
@@ -35,9 +37,11 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-// PATCH: Save the counselor's final review
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const resolvedParams = await params;
+    const recordId = resolvedParams.id;
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.id || session.user.role !== "counselor") {
       return NextResponse.json({ error: "Unauthorized access" }, { status: 403 });
@@ -52,7 +56,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     await connectToDatabase();
 
     const updatedRecord = await CounselingRecord.findByIdAndUpdate(
-      params.id,
+      recordId,
       {
         $set: {
           status: "Reviewed_Completed",
@@ -63,7 +67,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
           }
         }
       },
-      { new: true }
+      { returnDocument: 'after' } 
     );
 
     return NextResponse.json({ message: "Review saved successfully!", record: updatedRecord }, { status: 200 });
