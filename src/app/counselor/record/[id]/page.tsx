@@ -94,18 +94,22 @@ export default function CounselorRecordReview({ params }: { params: Promise<{ id
               <button 
                 type="button"
                 onClick={handleAutoFillWithAI}
-                className="flex-1 md:flex-none flex items-center justify-center bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-4 py-2 rounded-lg font-medium transition-colors border border-indigo-200 shadow-sm"
+                className="group flex-1 md:flex-none flex items-center justify-center bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-95 px-4 py-2 rounded-lg font-medium transition-all duration-300 ease-in-out border border-indigo-200"
               >
-                <Bot className="w-4 h-4 mr-2" /> Auto-Fill Document
+                <Bot className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:animate-bounce" /> Auto-Fill Document
               </button>
             )}
             {!isReviewed && (
               <button 
                 onClick={handleSaveReview}
                 disabled={isSaving}
-                className="flex-1 md:flex-none flex items-center justify-center bg-slate-900 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-800 disabled:bg-slate-400 transition-colors shadow-sm"
+                className={`group flex-1 md:flex-none flex items-center justify-center text-white px-6 py-2 rounded-lg font-bold transition-all duration-300 ease-in-out shadow-sm ${
+                  isSaving 
+                    ? "bg-slate-600 animate-pulse cursor-not-allowed" 
+                    : "bg-slate-900 hover:bg-slate-800 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-95"
+                }`}
               >
-                <Save className="w-4 h-4 mr-2" />
+                <Save className={`w-4 h-4 mr-2 transition-transform duration-300 ${isSaving ? "" : "group-hover:scale-110"}`} />
                 {isSaving ? "Finalizing..." : "Approve & Share"}
               </button>
             )}
