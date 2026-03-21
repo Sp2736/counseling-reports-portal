@@ -16,7 +16,8 @@ export default function StudentNavbar() {
   ];
 
   return (
-    <nav className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+    <nav className="bg-white border-b border-gray-200 print:hidden shadow-sm sticky top-0 z-50">
+      {/* FIX: added 'print:hidden' to prevent navbar being printed in report while exporting */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           
