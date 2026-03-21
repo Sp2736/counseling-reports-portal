@@ -6,13 +6,22 @@ import { User } from "@/src/models/User";
 
 export async function POST(req: Request) {
   try {
-    const { email, password, role } = await req.json();
+    const { email, password, role, secretKey } = await req.json();
 
     if (!email || !password || !role) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // THE FIX: Bulletproof the email by forcing lowercase and removing accidental spaces
+    // THE FIX: Strictly compare against the hidden environment variable
+    if (role === "counselor") {
+      const expectedKey = process.env.COUNSELOR_SECRET_KEY;
+      
+      // Failsafe: If the env variable is missing from the server, reject all counselor signups
+      if (!expectedKey || secretKey !== expectedKey) {
+        return NextResponse.json({ error: "Invalid Counselor Authorization Key" }, { status: 403 });
+      }
+    }
+
     const sanitizedEmail = email.toLowerCase().trim();
 
     await connectToDatabase();
@@ -24,7 +33,6 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the user with the clean email
     await User.create({
       email: sanitizedEmail,
       password: hashedPassword,

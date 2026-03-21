@@ -9,7 +9,8 @@ import { University, ChevronRight } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({ email: "", password: "", role: "student" });
+  // Added secretKey to our form state
+  const [formData, setFormData] = useState({ email: "", password: "", role: "student", secretKey: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -19,7 +20,6 @@ export default function SignupPage() {
     setError("");
 
     try {
-      // 1. Register the user in MongoDB
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -29,7 +29,6 @@ export default function SignupPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to register");
 
-      // 2. Automatically log them in immediately after signing up
       const signInRes = await signIn("credentials", {
         redirect: false,
         email: formData.email,
@@ -38,7 +37,6 @@ export default function SignupPage() {
 
       if (signInRes?.error) throw new Error(signInRes.error);
       
-      // 3. Send them to the root route (which will push them to Onboarding!)
       router.push("/");
     } catch (err: any) {
       setError(err.message);
@@ -67,12 +65,26 @@ export default function SignupPage() {
               <select 
                 className="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 font-medium bg-slate-50"
                 value={formData.role}
-                onChange={e => setFormData({...formData, role: e.target.value})}
+                onChange={e => setFormData({...formData, role: e.target.value, secretKey: ""})} // Resets key if they toggle back to student
               >
                 <option value="student">I am a Student</option>
                 <option value="counselor">I am a Counselor</option>
               </select>
             </div>
+
+            {/* NEW: Conditional Counselor Authorization Field */}
+            {formData.role === "counselor" && (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Counselor Authorization Key</label>
+                <input 
+                  type="password" required
+                  className="w-full p-3.5 border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 bg-indigo-50/30 placeholder-slate-400"
+                  value={formData.secretKey}
+                  onChange={e => setFormData({...formData, secretKey: e.target.value})}
+                  placeholder="Enter the staff passcode"
+                />
+              </div>
+            )}
 
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">University Email</label>
