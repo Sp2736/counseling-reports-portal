@@ -1,3 +1,4 @@
+// src/app/api/auth/[...nextauth]/route.ts
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
@@ -19,21 +20,22 @@ export const authOptions: NextAuthOptions = {
 
         await connectToDatabase();
 
-        // Find the user and explicitly select the password field (since we hid it in the schema)
-        const user = await User.findOne({ email: credentials.email }).select("+password");
+        // THE FIX: Sanitize the incoming login email so it matches the database perfectly
+        const sanitizedEmail = credentials.email.toLowerCase().trim();
+
+        // Find the user using the clean email
+        const user = await User.findOne({ email: sanitizedEmail }).select("+password");
 
         if (!user) {
           throw new Error("No user found with this email");
         }
 
-        // SECURITY: Compare the provided password with the hashed password in the database
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
 
         if (!isPasswordValid) {
           throw new Error("Invalid password");
         }
 
-        // Return the user object without the password
         return {
           id: user._id.toString(),
           email: user.email,
@@ -44,9 +46,7 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
-    // 1. When a JWT is created or updated
     async jwt({ token, user, trigger, session }) {
-      // NEW FIX: Listen for the client requesting a cookie update
       if (trigger === "update" && session?.isProfileComplete) {
         token.isProfileComplete = session.isProfileComplete;
       }
@@ -58,7 +58,6 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    // 2. When the frontend requests the session
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string;
@@ -70,15 +69,13 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: "jwt",
-    maxAge: 24 * 60 * 60, // 24 hours until the session expires
+    maxAge: 24 * 60 * 60,
   },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: "/login", // We will build this custom login page next
+    signIn: "/login",
   },
 };
 
 const handler = NextAuth(authOptions);
-
-// Next.js requires these to be exported as GET and POST for the App Router
 export { handler as GET, handler as POST };

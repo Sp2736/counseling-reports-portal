@@ -1,12 +1,8 @@
 UI/UX for student:
 
 ~ make proper dashboard so that student can see when to upload next report, i.e. like due date
-~ if counselor cancels a report from his end, the student should be shown that report was cancelled, along with the comment made by the counselor for it, stating the reason
 
 UI/UX for counselor:
 
-~ they can view, cancel, manually or use ai for report. if cancel, then it should pop a comment box wherein counselor should write the reason to cancel the report
 ~ they can update their profile and counseling range info
-~ they can see profiles of all students in their counseling, and can open a profile to view all reports submitted by that student
-~ in waiting list, the option for generate all with AI should only be there if it is seamlessly possible to generate reports individually for each student. else, ai button should be clicked individually for each student and hence the generate all button should be removed
 ~ make a dashboard for the counselor to see total students, total submitted, total submitted period wise (for e.g., in a semester if 4 reports are to be submitted, then the count for all those 4 times should be separately seen)

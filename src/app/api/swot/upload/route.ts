@@ -47,23 +47,39 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "The document appears to be empty or unreadable." }, { status: 400 });
     }
 
+    // --- SMART EXTRACTOR ---
+    // Look for patterns like "Semester,4", "Semester: 4", or "Semester 4" in the raw text
+    const semesterMatch = rawText.match(/Semester\s*[,:-]?\s*(\d+)/i);
+    const extractedSemester = semesterMatch ? parseInt(semesterMatch[1], 10) : null;
+
+    let currentPeriod = 1;
+
+    // If we successfully found the semester in the document:
+    if (extractedSemester) {
+      // Update the Student's Global Profile
+      await StudentProfile.findOneAndUpdate(
+        { userId: session.user.id },
+        { $set: { semester: extractedSemester } }
+      );
+      currentPeriod = extractedSemester;
+    } else {
+      // Fallback: If no semester is found, calculate dynamic report period sequentially
+      const lastRecord = await CounselingRecord.findOne({ student: studentProfile._id }).sort({ createdAt: -1 });
+      if (lastRecord && lastRecord.report_period) {
+        currentPeriod = lastRecord.report_period < 8 ? lastRecord.report_period + 1 : 1;
+      }
+    }
+
     // 3. Send the clean text string directly to Gemini
     const aiResult = await analyzeSWOTWithAI(rawText);
 
-    // 4. Calculate dynamic report period (1 through 4)
-    const lastRecord = await CounselingRecord.findOne({ student: studentProfile._id }).sort({ createdAt: -1 });
-    let currentPeriod = 1;
-    if (lastRecord && lastRecord.report_period) {
-       currentPeriod = lastRecord.report_period < 4 ? lastRecord.report_period + 1 : 1;
-    }
-
-    // 5. Save the AI's output AND the raw text to the database
+    // 4. Save the AI's output AND the raw text to the database
     const newRecord = await CounselingRecord.create({
       student: studentProfile._id,
       assignedCounselor: studentProfile.assignedCounselor,
       status: "Needs_Review", 
-      report_period: currentPeriod,
-      original_submitted_text: rawText, // Ensures the counselor can see the student's actual words
+      report_period: currentPeriod, // Uses extracted semester!
+      original_submitted_text: rawText, 
       swot_input: aiResult.swot_input,
       ai_analysis: aiResult.ai_analysis,
     });

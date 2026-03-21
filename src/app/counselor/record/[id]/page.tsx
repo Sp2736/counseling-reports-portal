@@ -3,27 +3,15 @@
 
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  Bot,
-  Save,
-  CheckCircle,
-  University,
-  ShieldCheck,
-  FileText,
-} from "lucide-react";
+import { ArrowLeft, Bot, Save, FileText, Printer } from "lucide-react";
 
-export default function CounselorRecordReview({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function CounselorRecordReview({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
-
+  
   const [record, setRecord] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-
+  
   const [riskLevel, setRiskLevel] = useState("Low");
   const [actionPlan, setActionPlan] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -50,8 +38,7 @@ export default function CounselorRecordReview({
     const ai = record.ai_analysis;
     setRiskLevel(ai.risk_prediction?.risk_level || "Low");
     setActionPlan(
-      `Counselor Findings:\n${ai.generated_report?.counselor_findings || "N/A"}\n\n` +
-        `Recommended Interventions:\n${ai.generated_report?.priority_interventions?.join("\n- ") || "N/A"}`,
+      `${ai.generated_report?.priority_interventions?.join("\n- ") || "N/A"}`
     );
   };
 
@@ -63,17 +50,12 @@ export default function CounselorRecordReview({
       const res = await fetch(`/api/counselor/records/${resolvedParams.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          final_risk_level: riskLevel,
-          final_action_plan: actionPlan,
-        }),
+        body: JSON.stringify({ final_risk_level: riskLevel, final_action_plan: actionPlan }),
       });
 
       if (!res.ok) throw new Error("Failed to save review.");
 
-      alert(
-        "Official Document successfully finalized and shared with the student!",
-      );
+      alert("Official Document successfully finalized and shared with the student!");
       router.push("/counselor/waiting-list");
     } catch (error) {
       alert("Error saving review.");
@@ -82,313 +64,264 @@ export default function CounselorRecordReview({
     }
   };
 
-  if (isLoading)
-    return (
-      <div className="p-8 text-center text-slate-500">
-        Generating Live Document...
-      </div>
-    );
-  if (!record)
-    return (
-      <div className="p-8 text-center text-red-500">Record not found.</div>
-    );
+  if (isLoading) return <div className="p-8 text-center text-slate-500 print:hidden">Generating Live Document...</div>;
+  if (!record) return <div className="p-8 text-center text-red-500 print:hidden">Record not found.</div>;
 
   const ai = record.ai_analysis;
-  const swot = record.swot_input || {
-    strengths: [],
-    weaknesses: [],
-    opportunities: [],
-    threats: [],
-  };
+  const swot = record.swot_input || { strengths: [], weaknesses: [], opportunities: [], threats: [] };
   const isReviewed = record.status === "Reviewed_Completed";
+  const docDate = new Date(record.createdAt).toLocaleDateString('en-GB');
 
   return (
-    <div className="min-h-screen bg-slate-100 p-6 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Top Control Bar */}
-        <div className="flex flex-col md:flex-row items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-          <div className="flex items-center space-x-4 mb-4 md:mb-0">
-            <button
-              onClick={() => router.push("/counselor/waiting-list")}
-              className="p-2 bg-slate-50 rounded-full hover:bg-slate-100 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5 text-slate-600" />
-            </button>
-            <div>
-              <h1 className="text-xl font-bold text-slate-900">
-                Live Document Review
-              </h1>
-              <p className="text-sm text-slate-600">
-                Student: {record.student?.fullName || "Unknown"} | Cycle:{" "}
-                {record.report_period || 1}
-              </p>
-            </div>
-          </div>
+    <>
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          @page { size: A4; margin: 15mm; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: white !important; }
+        }
+      `}} />
 
-          <div className="flex space-x-3 w-full md:w-auto">
-            {!isReviewed && (
-              <button
-                type="button"
-                onClick={handleAutoFillWithAI}
-                className="group flex-1 md:flex-none flex items-center justify-center bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-95 px-4 py-2 rounded-lg font-medium transition-all duration-300 ease-in-out border border-indigo-200"
-              >
-                <Bot className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:animate-bounce" />{" "}
-                Auto-Fill Document
+      <div className="min-h-screen bg-slate-100 p-6 md:p-8 print:bg-white print:p-0">
+        <div className="max-w-7xl mx-auto space-y-6 print:space-y-0">
+          
+          <div className="flex flex-col md:flex-row items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-slate-200 print:hidden font-sans">
+            <div className="flex items-center space-x-4 mb-4 md:mb-0">
+              <button onClick={() => router.push("/counselor/waiting-list")} className="p-2 bg-slate-50 rounded-full hover:bg-slate-100 transition-colors">
+                <ArrowLeft className="w-5 h-5 text-slate-600" />
               </button>
-            )}
-            {!isReviewed && (
-              <button
-                onClick={handleSaveReview}
-                disabled={isSaving}
-                className={`group flex-1 md:flex-none flex items-center justify-center text-white px-6 py-2 rounded-lg font-bold transition-all duration-300 ease-in-out shadow-sm ${
-                  isSaving
-                    ? "bg-slate-600 animate-pulse cursor-not-allowed"
-                    : "bg-slate-900 hover:bg-slate-800 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-95"
-                }`}
-              >
-                <Save
-                  className={`w-4 h-4 mr-2 transition-transform duration-300 ${isSaving ? "" : "group-hover:scale-110"}`}
-                />
-                {isSaving ? "Finalizing..." : "Approve & Share"}
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* LEFT COLUMN: Reference Materials */}
-          <div className="lg:col-span-4 space-y-6 sticky top-24">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-              <h2 className="text-sm font-bold text-slate-800 mb-3 flex items-center uppercase tracking-wider">
-                <FileText className="w-4 h-4 mr-2 text-slate-500" /> Raw Student
-                Text
-              </h2>
-              <div className="bg-slate-50 p-4 rounded-md text-xs text-slate-700 whitespace-pre-wrap h-[300px] overflow-y-auto border border-slate-100 font-mono leading-relaxed">
-                {record.original_submitted_text || "No raw text available."}
-              </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-              <h2 className="text-sm font-bold text-slate-800 mb-3 flex items-center uppercase tracking-wider">
-                <Bot className="w-4 h-4 mr-2 text-indigo-600" /> AI Diagnostic
-                Summary
-              </h2>
-              {ai ? (
-                <div className="space-y-4 text-sm">
-                  <div>
-                    <p className="font-bold text-slate-400 uppercase text-[10px] tracking-wider">
-                      Calculated Risk Factor
-                    </p>
-                    <p
-                      className={`font-bold mt-1 ${ai.risk_prediction?.risk_level === "High" ? "text-red-600" : "text-slate-900"}`}
-                    >
-                      {ai.risk_prediction?.risk_level} (Score:{" "}
-                      {ai.risk_prediction?.risk_score}/10)
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-bold text-slate-400 uppercase text-[10px] tracking-wider mb-1">
-                      Key Flags
-                    </p>
-                    <ul className="list-disc list-inside text-slate-700 text-xs space-y-1">
-                      {ai.risk_prediction?.risk_factors?.map(
-                        (f: string, i: number) => (
-                          <li key={i}>{f}</li>
-                        ),
-                      )}
-                    </ul>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-slate-500 text-sm">
-                  Diagnostic not available.
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* RIGHT COLUMN: The Interactive A4 Document Preview */}
-          <div className="lg:col-span-8 bg-white border border-gray-300 shadow-xl p-8 md:p-12 text-black max-w-[800px] mx-auto w-full">
-            {/* Document Header */}
-            <div className="flex justify-between items-start border-b-2 border-slate-900 pb-6 mb-8">
               <div>
-                <div className="flex items-center space-x-3 mb-2">
-                  <University className="w-8 h-8 text-slate-900" />
-                  <h1 className="text-2xl font-black tracking-tight uppercase text-slate-900">
-                    Student Counseling
-                  </h1>
-                </div>
-                {/* NEW: Updated Sub-Title */}
-                <h2 className="text-sm font-bold text-slate-500 uppercase tracking-widest">
-                  SWOT Analysis Report
-                </h2>
+                <h1 className="text-xl font-bold text-slate-900">Live Document Review</h1>
+                <p className="text-sm text-slate-600">Student: {record.student?.fullName || "Unknown"} | Cycle: {record.report_period || 1}</p>
               </div>
-              <div className="text-right text-xs text-slate-600 space-y-1.5 font-mono">
-                <p>
-                  <span className="font-bold text-slate-400">REPORT ID:</span>{" "}
-                  {record._id.substring(0, 8).toUpperCase()}
-                </p>
-                <p>
-                  <span className="font-bold text-slate-400">STUDENT ID:</span>{" "}
-                  {record.student?.studentId}
-                </p>
-                <p>
-                  <span className="font-bold text-slate-400">
-                    DATE OF APPROVAL:
-                  </span>{" "}
-                  {new Date(record.createdAt).toLocaleDateString()}
-                </p>
+            </div>
+            
+            <div className="flex space-x-3 w-full md:w-auto">
+              {isReviewed ? (
+                <button 
+                  onClick={() => window.print()}
+                  className="flex items-center justify-center bg-indigo-600 text-white px-5 py-2 rounded-lg font-bold hover:bg-indigo-700 transition-colors shadow-sm"
+                >
+                  <Printer className="w-4 h-4 mr-2" /> Print Record
+                </button>
+              ) : (
+                <>
+                  <button 
+                    type="button"
+                    onClick={handleAutoFillWithAI}
+                    className="group flex-1 md:flex-none flex items-center justify-center bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-4 py-2 rounded-lg font-medium transition-colors border border-indigo-200"
+                  >
+                    <Bot className="w-4 h-4 mr-2" /> Auto-Fill
+                  </button>
+                  <button 
+                    onClick={handleSaveReview}
+                    disabled={isSaving}
+                    className={`flex items-center justify-center text-white px-6 py-2 rounded-lg font-bold transition-colors shadow-sm ${
+                      isSaving ? "bg-slate-600 animate-pulse cursor-not-allowed" : "bg-slate-900 hover:bg-slate-800"
+                    }`}
+                  >
+                    <Save className="w-4 h-4 mr-2" /> {isSaving ? "Finalizing..." : "Approve & Share"}
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start print:block">
+            
+            {/* UI References Sidebar (Hidden when printing) */}
+            <div className="lg:col-span-4 space-y-6 sticky top-24 print:hidden font-sans">
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 className="text-sm font-bold text-slate-800 mb-3 flex items-center uppercase tracking-wider">
+                  <FileText className="w-4 h-4 mr-2 text-slate-500" /> Raw Student Text
+                </h2>
+                <div className="bg-slate-50 p-4 rounded-md text-xs text-slate-700 whitespace-pre-wrap h-[300px] overflow-y-auto border border-slate-100 font-mono leading-relaxed">
+                  {record.original_submitted_text || "No raw text available."}
+                </div>
+              </div>
+
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 className="text-sm font-bold text-slate-800 mb-3 flex items-center uppercase tracking-wider">
+                  <Bot className="w-4 h-4 mr-2 text-indigo-600" /> AI Diagnostic Summary
+                </h2>
+                {ai ? (
+                  <div className="space-y-4 text-sm">
+                    <div>
+                      <p className="font-bold text-slate-400 uppercase text-[10px] tracking-wider">Calculated Risk Factor</p>
+                      <p className={`font-bold mt-1 ${ai.risk_prediction?.risk_level === 'High' ? 'text-red-600' : 'text-slate-900'}`}>
+                        {ai.risk_prediction?.risk_level} (Score: {ai.risk_prediction?.risk_score}/10)
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-bold text-slate-400 uppercase text-[10px] tracking-wider mb-1">Key Flags</p>
+                      <ul className="list-disc list-inside text-slate-700 text-xs space-y-1">
+                        {ai.risk_prediction?.risk_factors?.map((f: string, i: number) => <li key={i}>{f}</li>)}
+                      </ul>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-slate-500 text-sm">Diagnostic not available.</p>
+                )}
               </div>
             </div>
 
-            {isReviewed && (
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg mb-8 flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-green-800 mb-1">
-                    Document Status
-                  </p>
-                  <p className="text-sm font-bold text-green-900">
-                    Reviewed & Finalized
-                  </p>
-                </div>
-                <ShieldCheck className="w-8 h-8 text-green-600 opacity-50" />
+            {/* --- OFFICIAL WORD DOCUMENT CANVAS --- */}
+            {/* THE FIX: Forced Cambria font, strict black text, stripped all background colors */}
+            <div 
+              className="lg:col-span-8 bg-white border border-gray-300 shadow-xl p-8 md:p-10 text-[13px] leading-relaxed text-black w-full print:col-span-12 print:border-none print:shadow-none print:p-0 print:max-w-none"
+              style={{ fontFamily: 'Cambria, Georgia, serif' }}
+            >
+              
+              {/* Header */}
+              <div className="text-center mb-6 text-black">
+                <h1 className="font-bold text-[15px] uppercase">CHAROTAR UNIVERSITY OF SCIENCE AND TECHNOLOGY (CHARUSAT)</h1>
+                <h2 className="font-bold text-[14px] uppercase mt-1">DEVANG PATEL INSTITUTE OF ADVANCE TECHNOLOGY AND RESEARCH (DEPSTAR)</h2>
+                <h3 className="font-bold text-[14px] underline mt-4">Student Counseling – SWOT Analysis Form</h3>
               </div>
-            )}
 
-            <div className="space-y-10">
-              <section>
-                <h3 className="text-sm font-black uppercase tracking-widest border-b border-slate-200 pb-2 mb-4 text-slate-900 flex items-center">
-                  <span className="bg-slate-900 text-white w-5 h-5 inline-flex items-center justify-center rounded-full mr-2 text-[10px]">
-                    1
-                  </span>
-                  Self-Assessment Data
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-slate-50 p-4 rounded-md border border-slate-100">
-                    <h4 className="font-bold text-slate-800 mb-2 text-xs uppercase">
-                      Strengths
-                    </h4>
-                    <ul className="text-xs text-slate-600 space-y-1 list-disc list-inside">
-                      {swot.strengths?.map((item: string, i: number) => (
-                        <li key={i}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="bg-slate-50 p-4 rounded-md border border-slate-100">
-                    <h4 className="font-bold text-slate-800 mb-2 text-xs uppercase">
-                      Weaknesses
-                    </h4>
-                    <ul className="text-xs text-slate-600 space-y-1 list-disc list-inside">
-                      {swot.weaknesses?.map((item: string, i: number) => (
-                        <li key={i}>{item}</li>
-                      ))}
-                    </ul>
+              {/* Student Info Table */}
+              <table className="w-full border-collapse border border-black mb-6 text-black">
+                <tbody>
+                  <tr>
+                    <td className="border border-black p-2 font-bold w-[20%]">Student ID</td>
+                    <td className="border border-black p-2 w-[30%]">{record.student?.studentId || "________________"}</td>
+                    <td className="border border-black p-2 font-bold w-[20%]">Student Name</td>
+                    <td className="border border-black p-2 w-[30%]">{record.student?.fullName || "________________"}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-black p-2 font-bold">Semester</td>
+                    <td className="border border-black p-2">{record.student?.semester || record.report_period || "____"}</td>
+                    <td className="border border-black p-2 font-bold">Department</td>
+                    <td className="border border-black p-2">{record.student?.department || "________________"}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-black p-2 font-bold">Date</td>
+                    <td className="border border-black p-2">{docDate}</td>
+                    <td className="border border-black p-2 font-bold">Risk Level</td>
+                    <td className="border border-black p-2">
+                      {!isReviewed ? (
+                        <select
+                          value={riskLevel}
+                          onChange={(e) => setRiskLevel(e.target.value)}
+                          className="w-full focus:outline-none bg-transparent text-[13px] font-bold text-black cursor-pointer"
+                          style={{ fontFamily: 'Cambria, Georgia, serif' }}
+                        >
+                          <option value="Low">Low</option>
+                          <option value="Medium">Medium</option>
+                          <option value="High">High</option>
+                          <option value="Critical">Critical</option>
+                        </select>
+                      ) : (
+                        record.counselor_review?.final_risk_level || "Low / Medium / High"
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              {/* SWOT Analysis Table */}
+              <div className="text-center font-bold text-[14px] underline mb-2 text-black">SWOT Analysis</div>
+              <table className="w-full border-collapse border border-black mb-6 table-fixed text-black">
+                <tbody>
+                  <tr>
+                    <td className="border border-black p-3 w-1/2 align-top">
+                      <div className="font-bold mb-2">Strengths</div>
+                      <ul className="list-disc pl-5 m-0">
+                        {swot.strengths?.length > 0 ? swot.strengths.map((item: string, i: number) => <li key={i}>{item}</li>) : <li>_________________________</li>}
+                      </ul>
+                    </td>
+                    <td className="border border-black p-3 w-1/2 align-top">
+                      <div className="font-bold mb-2">Weaknesses</div>
+                      <ul className="list-disc pl-5 m-0">
+                        {swot.weaknesses?.length > 0 ? swot.weaknesses.map((item: string, i: number) => <li key={i}>{item}</li>) : <li>_________________________</li>}
+                      </ul>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="border border-black p-3 w-1/2 align-top">
+                      <div className="font-bold mb-2">Opportunities</div>
+                      <ul className="list-disc pl-5 m-0">
+                        {swot.opportunities?.length > 0 ? swot.opportunities.map((item: string, i: number) => <li key={i}>{item}</li>) : <li>_________________________</li>}
+                      </ul>
+                    </td>
+                    <td className="border border-black p-3 w-1/2 align-top">
+                      <div className="font-bold mb-2">Threats</div>
+                      <ul className="list-disc pl-5 m-0">
+                        {swot.threats?.length > 0 ? swot.threats.map((item: string, i: number) => <li key={i}>{item}</li>) : <li>_________________________</li>}
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              {/* Action Plan / Findings */}
+              <div className="mb-8 space-y-4 text-black">
+                <div>
+                  <span className="font-bold">Counselor Findings: </span>
+                  <br />
+                  <div className="mt-1 min-h-[40px] whitespace-pre-wrap">
+                    {ai?.generated_report?.counselor_findings || "____________________________________________________________\n____________________________________________________________"}
                   </div>
                 </div>
-              </section>
-
-              {ai && (
-                <section>
-                  <h3 className="text-sm font-black uppercase tracking-widest border-b border-slate-200 pb-2 mb-4 text-slate-900 flex items-center">
-                    <span className="bg-slate-900 text-white w-5 h-5 inline-flex items-center justify-center rounded-full mr-2 text-[10px]">
-                      2
-                    </span>
-                    Psychological & Growth Profile
-                  </h3>
-                  <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-slate-50 p-5 rounded-md border border-slate-100">
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                        Learning Style
-                      </p>
-                      <p className="text-slate-800 font-medium">
-                        {ai.psychological_profile?.learning_style}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                        Growth Category
-                      </p>
-                      <p className="text-slate-800 font-medium">
-                        {
-                          ai.psychological_profile
-                            ?.psychological_growth_category
-                        }
-                      </p>
-                    </div>
-                  </div>
-                </section>
-              )}
-
-              <section className="break-inside-avoid">
-                <h3 className="text-sm font-black uppercase tracking-widest border-b border-indigo-200 pb-2 mb-4 text-indigo-900 flex items-center">
-                  <span className="bg-indigo-600 text-white w-5 h-5 inline-flex items-center justify-center rounded-full mr-2 text-[10px]">
-                    3
-                  </span>
-                  Official Action Plan (Counselor Input)
-                </h3>
-
-                <div className="bg-indigo-50/50 border border-indigo-100 p-6 rounded-lg space-y-6">
-                  <div>
-                    <label className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest block mb-2">
-                      Final Assessed Risk Level
-                    </label>
-                    <select
-                      className={`w-full md:w-1/2 px-3 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 text-sm font-bold uppercase transition-colors ${riskLevel === "High" || riskLevel === "Critical" ? "border-red-300 bg-red-50 text-red-700" : "border-indigo-200 bg-white text-indigo-900"}`}
-                      value={riskLevel}
-                      onChange={(e) => setRiskLevel(e.target.value)}
-                      disabled={isReviewed}
-                    >
-                      <option value="Low">Low Risk</option>
-                      <option value="Medium">Medium Risk</option>
-                      <option value="High">High Risk</option>
-                      <option value="Critical">
-                        Critical Intervention Required
-                      </option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest block mb-2">
-                      Prescribed Interventions & Notes
-                    </label>
+                <div>
+                  <span className="font-bold">Outcome / Action Plan: </span>
+                  <br />
+                  {!isReviewed ? (
                     <textarea
-                      rows={8}
-                      required
-                      placeholder="Click 'Auto-Fill Document' to generate insights, or type your official interventions here..."
-                      className="w-full px-4 py-3 border border-indigo-200 rounded-md bg-white text-slate-900 shadow-sm focus:ring-2 focus:ring-indigo-500 text-sm leading-relaxed"
+                      rows={4}
                       value={actionPlan}
                       onChange={(e) => setActionPlan(e.target.value)}
-                      disabled={isReviewed}
+                      placeholder="Click the 'Auto-Fill' button above, or type your official interventions here..."
+                      className="w-full mt-1 p-3 border border-black focus:outline-none focus:ring-1 focus:ring-black bg-transparent text-black text-[13px] resize-none"
+                      style={{ fontFamily: 'Cambria, Georgia, serif' }}
                     />
-                  </div>
+                  ) : (
+                    <div className="mt-1 min-h-[40px] whitespace-pre-wrap">
+                      {record.counselor_review?.final_action_plan || "____________________________________________________________\n____________________________________________________________"}
+                    </div>
+                  )}
                 </div>
-              </section>
-            </div>
-
-            {/* NEW: Updated Footer Layout */}
-            <div className="mt-16 pt-6 flex justify-between items-end opacity-60">
-              {/* Student Signature Block */}
-              <div className="text-center w-1/3">
-                <div className="w-full border-b border-slate-400 mb-2"></div>
-
-                <p className="text-[10px] text-slate-800 font-bold mt-1 uppercase truncate">
-                  {record.student?.fullName || "Student"}'s Signature
-                </p>
               </div>
 
-              {/* Counselor Signature Block */}
-              <div className="text-center w-1/3">
-                <div className="w-full border-b border-slate-400 mb-2"></div>
+              {/* Counseling Meeting Record */}
+              <div className="font-bold text-[14px] mb-2 underline text-black">Counseling Meeting Record</div>
+              <table className="w-full border-collapse border border-black mb-16 text-black">
+                <thead>
+                  <tr>
+                    <th className="border border-black p-2 font-bold text-left w-1/4">Date</th>
+                    <th className="border border-black p-2 font-bold text-left w-1/2">Discussion</th>
+                    <th className="border border-black p-2 font-bold text-left w-1/4">Action Taken</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-black p-2 h-[40px]">{docDate}</td>
+                    <td className="border border-black p-2">Routine SWOT Assessment & Growth Mapping</td>
+                    <td className="border border-black p-2">{isReviewed ? "Review Finalized" : "Pending Approval"}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-black p-2 h-[40px]"></td>
+                    <td className="border border-black p-2"></td>
+                    <td className="border border-black p-2"></td>
+                  </tr>
+                </tbody>
+              </table>
 
-                <p className="text-[10px] text-slate-800 font-bold mt-1 uppercase truncate">
-                  {record.assignedCounselor?.fullName || "Counselor"}'s
-                  Signature
-                </p>
+              {/* Signatures */}
+              <div className="flex justify-between items-end mt-16 px-8 break-inside-avoid text-black">
+                <div className="text-center w-48">
+                  <div className="w-full border-b border-black mb-2 h-12"></div>
+                  <p className="font-bold text-[14px]">{record.student?.fullName || "Student Name"}</p>
+                </div>
+                <div className="text-center w-48">
+                  <div className="w-full border-b border-black mb-2 h-12"></div>
+                  <p className="font-bold text-[14px]">{record.assignedCounselor?.fullName || "Counselor Name"}</p>
+                </div>
               </div>
+
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

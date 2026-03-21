@@ -1,136 +1,234 @@
 // src/app/onboarding/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { User, GraduationCap, Briefcase, ChevronRight, ShieldCheck } from "lucide-react";
 
 export default function OnboardingPage() {
-  const { data: session, update } = useSession();
-  
-  const [fullName, setFullName] = useState("");
-  const [identifier, setIdentifier] = useState("");
-  const [counselorId, setCounselorId] = useState("");
-  const [availableCounselors, setAvailableCounselors] = useState<{_id: string, fullName: string}[]>([]);
-  
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const { data: session, status, update } = useSession();
+  const router = useRouter();
+
+  const [counselors, setCounselors] = useState<any[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [counselorData, setCounselorData] = useState({ 
+    employeeId: "", // NEW: Added to state
+    title: "Dr.", 
+    fullName: "", 
+    department: "DCS",
+    batchYear: "2024",
+    startRollNo: "",
+    endRollNo: ""
+  });
+
+  const [studentData, setStudentData] = useState({ 
+    fullName: "", 
+    studentId: "", 
+    assignedCounselor: "" 
+  });
 
   useEffect(() => {
+    if (status === "unauthenticated") router.push("/login");
     if (session?.user?.role === "student") {
       fetch("/api/counselors")
-        .then((res) => res.json())
-        .then((data) => setAvailableCounselors(data || []))
-        .catch(() => console.error("Failed to load counselors"));
+        .then(res => res.json())
+        .then(data => setCounselors(data));
     }
-  }, [session]);
-
-  if (!session?.user) return <div className="p-8 text-center text-gray-800">Loading...</div>;
-
-  const role = session.user.role;
+  }, [status, router, session]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError("");
+    setIsSubmitting(true);
 
-    if (role === "student" && !/^\d{2}[A-Za-z]{3}\d{3}$/.test(identifier)) {
-      setError("Student ID must be in the format XXCCCXXX (e.g., 23CSE102)");
-      setIsLoading(false); return;
-    }
-    if (role === "student" && !counselorId) {
-      setError("Please select a counselor.");
-      setIsLoading(false); return;
-    }
-    if (role === "counselor" && !/^\d{4}$/.test(identifier)) {
-      setError("Employee ID must be exactly 4 digits.");
-      setIsLoading(false); return;
-    }
+    const payload = session?.user?.role === "student" ? studentData : counselorData;
 
     try {
       const res = await fetch("/api/user/complete-profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName, identifier, counselorId, role }),
+        body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error((await res.json()).error);
-
-      // CRITICAL FIX: Explicitly tell NextAuth to update the cookie state
-      await update({ isProfileComplete: true });
-      
-      // CRITICAL FIX: Force a hard browser navigation to clear stale caches
-      if (role === "student") window.location.href = "/student/upload";
-      if (role === "counselor") window.location.href = "/counselor/waiting-list";
-
-    } catch (err: any) {
-      setError(err.message);
-      setIsLoading(false);
+      if (res.ok) {
+        await update({ isProfileComplete: true }); 
+        window.location.href = "/"; 
+      } else {
+        alert("Failed to complete profile.");
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error(error);
+      setIsSubmitting(false);
     }
   };
 
-  // UI FIX: We created a reusable input class to guarantee text visibility
-  const inputStyles = "w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500";
+  if (status === "loading") return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-500">Loading your profile...</div>;
+
+  const role = session?.user?.role;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
-      <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-md border border-gray-100">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Complete Your Profile</h2>
-        <p className="text-gray-600 mb-6 text-sm">Welcome! Please provide your details to continue.</p>
-
-        {error && <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-            <input 
-              type="text" 
-              required 
-              className={inputStyles}
-              placeholder="e.g., Jane Doe"
-              value={fullName} 
-              onChange={(e) => setFullName(e.target.value)} 
-            />
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4 font-sans py-12">
+      <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+        
+        <div className="bg-slate-900 p-8 text-center">
+          <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+            {role === "student" ? <GraduationCap className="w-8 h-8 text-white" /> : <Briefcase className="w-8 h-8 text-white" />}
           </div>
+          <h2 className="text-2xl font-black text-white tracking-tight">Complete Your Profile</h2>
+          <p className="text-slate-400 mt-2 text-sm">Set up your university credentials to access the matrix.</p>
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {role === "student" ? "Student ID" : "Employee ID"}
-            </label>
-            <input 
-              type="text" 
-              required 
-              className={`${inputStyles} uppercase`}
-              placeholder={role === "student" ? "e.g., 23CSE102" : "e.g., 1042"}
-              value={identifier} 
-              onChange={(e) => setIdentifier(e.target.value)} 
-            />
-          </div>
+        <div className="p-8">
+          {role === "counselor" && (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              
+              <div className="flex space-x-4">
+                <div className="w-1/3">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Title</label>
+                  <select 
+                    className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 font-medium bg-slate-50"
+                    value={counselorData.title}
+                    onChange={e => setCounselorData({...counselorData, title: e.target.value})}
+                  >
+                    <option value="Dr.">Dr.</option>
+                    <option value="Mr.">Mr.</option>
+                    <option value="Mrs.">Mrs.</option>
+                    <option value="Prof.">Prof.</option>
+                  </select>
+                </div>
+                <div className="w-2/3">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
+                  <input 
+                    type="text" required
+                    className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 bg-slate-50 placeholder-slate-400"
+                    value={counselorData.fullName}
+                    onChange={e => setCounselorData({...counselorData, fullName: e.target.value})}
+                    placeholder="Jane Doe"
+                  />
+                </div>
+              </div>
 
-          {role === "student" && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Counselor</label>
-              <select 
-                required 
-                className={inputStyles}
-                value={counselorId} 
-                onChange={(e) => setCounselorId(e.target.value)}
-              >
-                <option value="" disabled>Select your counselor...</option>
-                {availableCounselors.map((c) => (
-                  <option key={c._id} value={c._id}>{c.fullName}</option>
-                ))}
-              </select>
-            </div>
+              {/* NEW: Employee ID Field */}
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Employee ID</label>
+                <input 
+                  type="text" required
+                  className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 font-mono font-bold uppercase tracking-widest bg-slate-50 placeholder-slate-400"
+                  value={counselorData.employeeId}
+                  onChange={e => setCounselorData({...counselorData, employeeId: e.target.value.toUpperCase()})}
+                  placeholder="e.g., EMP10234"
+                />
+              </div>
+
+              <div className="flex space-x-4">
+                <div className="w-1/2">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Department</label>
+                  <select 
+                    className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 font-medium bg-slate-50"
+                    value={counselorData.department}
+                    onChange={e => setCounselorData({...counselorData, department: e.target.value})}
+                  >
+                    <option value="DCS">DCS (Computer Science)</option>
+                    <option value="DCE">DCE (Computer Engineering)</option>
+                    <option value="DIT">DIT (Info Technology)</option>
+                  </select>
+                </div>
+                <div className="w-1/2">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Batch Year</label>
+                  <select 
+                    className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 font-medium bg-slate-50"
+                    value={counselorData.batchYear}
+                    onChange={e => setCounselorData({...counselorData, batchYear: e.target.value})}
+                  >
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex space-x-4">
+                <div className="w-1/2">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Start Roll No</label>
+                  <input 
+                    type="text" required
+                    className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 font-mono bg-slate-50 placeholder-slate-400"
+                    value={counselorData.startRollNo}
+                    onChange={e => setCounselorData({...counselorData, startRollNo: e.target.value})}
+                    placeholder="e.g., 001"
+                  />
+                </div>
+                <div className="w-1/2">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">End Roll No</label>
+                  <input 
+                    type="text" required
+                    className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 font-mono bg-slate-50 placeholder-slate-400"
+                    value={counselorData.endRollNo}
+                    onChange={e => setCounselorData({...counselorData, endRollNo: e.target.value})}
+                    placeholder="e.g., 060"
+                  />
+                </div>
+              </div>
+
+              <button type="submit" disabled={isSubmitting} className="w-full mt-6 bg-indigo-600 text-white p-3.5 rounded-xl font-bold hover:bg-indigo-700 transition flex items-center justify-center group shadow-md">
+                {isSubmitting ? "Saving Profile..." : "Enter Command Center"}
+                {!isSubmitting && <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />}
+              </button>
+            </form>
           )}
 
-          <button 
-            type="submit" 
-            disabled={isLoading} 
-            className="w-full mt-6 py-2 px-4 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 disabled:bg-blue-400 transition-colors"
-          >
-            {isLoading ? "Saving..." : "Save Profile & Continue"}
-          </button>
-        </form>
+          {role === "student" && (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Legal Name</label>
+                <input 
+                  type="text" required
+                  className="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 bg-slate-50"
+                  value={studentData.fullName}
+                  onChange={e => setStudentData({...studentData, fullName: e.target.value})}
+                  placeholder="e.g., John Doe"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">College ID</label>
+                <input 
+                  type="text" required
+                  className="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 font-mono font-bold uppercase tracking-widest bg-slate-50 placeholder-slate-400"
+                  value={studentData.studentId}
+                  onChange={e => setStudentData({...studentData, studentId: e.target.value.toUpperCase()})}
+                  placeholder="e.g., 24DCS088"
+                />
+                <p className="text-[11px] text-slate-400 mt-2 flex items-center"><ShieldCheck className="w-3 h-3 mr-1" /> Department is automatically extracted from your ID.</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Assigned Counselor</label>
+                <select 
+                  required
+                  className="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 font-medium bg-slate-50"
+                  value={studentData.assignedCounselor}
+                  onChange={e => setStudentData({...studentData, assignedCounselor: e.target.value})}
+                >
+                  <option value="">-- Select Your Assigned Counselor --</option>
+                  {counselors.map(c => (
+                    <option key={c._id} value={c._id}>{c.fullName} ({c.department})</option>
+                  ))}
+                </select>
+              </div>
+
+              <button type="submit" disabled={isSubmitting} className="w-full mt-6 bg-slate-900 text-white p-3.5 rounded-xl font-bold hover:bg-slate-800 transition flex items-center justify-center group shadow-md">
+                {isSubmitting ? "Activating Profile..." : "Access Dashboard"}
+                {!isSubmitting && <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />}
+              </button>
+            </form>
+          )}
+
+        </div>
       </div>
     </div>
   );

@@ -9,60 +9,58 @@ import { CounselorProfile } from "@/src/models/CounselorProfile";
 
 export async function POST(req: Request) {
   try {
-    // SECURITY: Ensure the user is actually logged in before accepting data
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized request" }, { status: 401 });
-    }
+    if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const body = await req.json();
-    const { fullName, identifier, counselorId } = body;
-    const role = session.user.role;
-
-    if (!fullName || !identifier) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-    }
-
+    const data = await req.json();
     await connectToDatabase();
 
-    if (role === "student") {
-      if (!counselorId) {
-        return NextResponse.json({ error: "You must select a counselor" }, { status: 400 });
-      }
+    const user = await User.findById(session.user.id);
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-      // Auto-extract year and department from "23CSE102"
-      const admissionYear = "20" + identifier.substring(0, 2); // "2023"
-      const department = identifier.substring(2, 5).toUpperCase(); // "CSE"
+    if (user.role === "student") {
+      const deptMatch = data.studentId.match(/[a-zA-Z]+/);
+      const department = deptMatch ? deptMatch[0].toUpperCase() : "Unknown";
 
-      await StudentProfile.create({
-        userId: session.user.id,
-        fullName,
-        studentId: identifier.toUpperCase(),
-        assignedCounselor: counselorId,
-        admissionYear,
-        department,
-      });
-
-    } else if (role === "counselor") {
-      await CounselorProfile.create({
-        userId: session.user.id,
-        fullName,
-        employeeId: identifier,
-        // The managed ranges (e.g., 23CSE001 to 23CSE060) can be configured by the Admin later
-      });
+      await StudentProfile.findOneAndUpdate(
+        { userId: user._id },
+        { 
+          $set: {
+            fullName: data.fullName,
+            studentId: data.studentId.toUpperCase(),
+            department: department,
+            semester: 1,
+            assignedCounselor: data.assignedCounselor
+          }
+        },
+        { upsert: true, returnDocument: 'after' } 
+      );
+      
+    } else if (user.role === "counselor") {
+      const combinedName = `${data.title} ${data.fullName}`.trim();
+      
+      await CounselorProfile.findOneAndUpdate(
+        { userId: user._id },
+        {
+          $set: {
+            employeeId: data.employeeId, // NEW: Save Employee ID
+            fullName: combinedName,
+            department: data.department,
+            batchYear: data.batchYear,
+            startRollNo: data.startRollNo,
+            endRollNo: data.endRollNo
+          }
+        },
+        { upsert: true, returnDocument: 'after' } 
+      );
     }
 
-    // Finally, update the User model to unlock the rest of the application
-    await User.findByIdAndUpdate(session.user.id, { isProfileComplete: true });
+    user.isProfileComplete = true;
+    await user.save();
 
     return NextResponse.json({ message: "Profile completed successfully" }, { status: 200 });
-
-  } catch (error: any) {
+  } catch (error) {
     console.error("Profile Completion Error:", error);
-    // Handle MongoDB unique constraint errors (e.g., ID already exists)
-    if (error.code === 11000) {
-      return NextResponse.json({ error: "This ID is already registered in the system." }, { status: 409 });
-    }
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

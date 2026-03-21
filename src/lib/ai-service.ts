@@ -6,20 +6,20 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function analyzeSWOTWithAI(text: string) {
   if (!process.env.GEMINI_API_KEY) {
-    throw new Error("Missing Gemini API Key. Please check your .env.local file.");
+    throw new Error(
+      "Missing Gemini API Key. Please check your .env.local file.",
+    );
   }
 
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const prompt = `
-    You are an expert academic counselor and psychologist.
-    Analyze the following student text (which may be a SWOT analysis or general thoughts).
-    Extract and structure the data into the following JSON format strictly. Do not add markdown formatting, just the raw JSON.
-    
-    CRITICAL INSTRUCTION FOR "counselor_findings":
-    It must contain a maximum of 3 paragraphs. Each paragraph must be 3-4 sentences long. 
-    Use plain text only. Separate paragraphs with a double newline (\\n\\n). 
-    Do NOT include any captions, subheadings, bold text, or titles within the findings.
+    You are an expert university academic counselor analyzing a student's self-assessment document. Analyze the following text. Respond strictly with a JSON object.
+
+  CRITICAL FORMATTING INSTRUCTIONS:
+  For the generated_report section, you MUST adhere to these strict length constraints:
+  1. "counselor_findings": Return a single string containing EXACTLY 3 to 5 concise bullet points. Start each bullet with "- " and separate them with newlines. DO NOT write paragraphs.
+  2. "priority_interventions": Return an array of strings containing EXACTLY 3 to 5 concise, actionable items.
 
     {
       "swot_input": {
@@ -64,7 +64,10 @@ export async function analyzeSWOTWithAI(text: string) {
     let jsonString = response.text();
 
     // Sanitize the output: Strip out markdown code block markers if Gemini adds them
-    jsonString = jsonString.replace(/```json/gi, "").replace(/```/g, "").trim();
+    jsonString = jsonString
+      .replace(/```json/gi, "")
+      .replace(/```/g, "")
+      .trim();
 
     try {
       return JSON.parse(jsonString);
@@ -72,7 +75,6 @@ export async function analyzeSWOTWithAI(text: string) {
       console.error("Failed to parse the cleaned JSON:", jsonString);
       throw new Error("AI returned malformed data.");
     }
-
   } catch (error) {
     console.error("AI Generation Error:", error);
     throw new Error("Failed to generate AI report from the provided text.");

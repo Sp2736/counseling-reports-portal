@@ -1,22 +1,24 @@
+// src/app/login/page.tsx
 "use client";
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { University, ChevronRight } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
-    // Call the NextAuth credentials provider securely
     const res = await signIn("credentials", {
       redirect: false,
       email,
@@ -24,78 +26,60 @@ export default function LoginPage() {
     });
 
     if (res?.error) {
-      setError(res.error);
+      setError("Invalid email or password.");
       setIsLoading(false);
     } else {
-      // If successful, Next.js Middleware will automatically route them to the correct dashboard 
-      // or the /onboarding page based on their token data on the next reload/push.
       router.push("/");
-      router.refresh();
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            University Counseling Portal
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Sign in to access your dashboard
-          </p>
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4 font-sans">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+        <div className="bg-slate-900 p-8 text-center">
+          <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <University className="w-6 h-6 text-white" />
+          </div>
+          <h2 className="text-2xl font-black text-white tracking-tight">Welcome Back</h2>
+          <p className="text-slate-400 mt-2 text-sm">Access your university dashboard.</p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm text-center font-medium border border-red-100">
-              {error}
-            </div>
-          )}
-
-          <div className="rounded-md shadow-sm space-y-4">
+        <div className="p-8">
+          {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg text-center font-medium">{error}</div>}
+          
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="email-address" className="sr-only">Email address</label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Email address (e.g., user@university.edu)"
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">University Email</label>
+              <input 
+                type="email" required
+                className="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 bg-slate-50 placeholder-slate-400"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="you@university.edu"
               />
             </div>
-            <div>
-              <label htmlFor="password" className="sr-only">Password</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
 
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200`}
-            >
-              {isLoading ? "Authenticating..." : "Sign In"}
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+              <input 
+                type="password" required
+                className="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 bg-slate-50 placeholder-slate-400"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+            </div>
+
+            <button type="submit" disabled={isLoading} className="w-full mt-2 bg-slate-900 text-white p-3.5 rounded-xl font-bold hover:bg-slate-800 transition flex items-center justify-center group shadow-md">
+              {isLoading ? "Authenticating..." : "Log In"}
+              {!isLoading && <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />}
             </button>
-          </div>
-        </form>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-slate-500 font-medium">
+            Don't have an account? <Link href="/signup" className="text-indigo-600 hover:text-indigo-800 font-bold">Sign Up</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
