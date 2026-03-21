@@ -30,13 +30,8 @@ export default function CounselorDashboardPage() {
       fetch("/api/counselor/stats").then((res) => res.json()),
     ])
       .then(([recordsData, statsData]) => {
-        // THE FIX: Ensure recordsData is actually an array before saving it to state.
-        // If it's an error object, fallback to an empty array [].
         setRecords(Array.isArray(recordsData) ? recordsData : []);
-
-        // Do the same for stats to prevent crashes if it fails
         setStats(statsData.error ? null : statsData);
-
         setIsLoading(false);
       })
       .catch((err) => {
@@ -69,7 +64,6 @@ export default function CounselorDashboardPage() {
 
       if (!res.ok) throw new Error("Failed to cancel report");
 
-      // Update UI seamlessly
       setRecords(
         records.map((r) =>
           r._id === selectedRecordId
@@ -102,7 +96,7 @@ export default function CounselorDashboardPage() {
           </p>
         </div>
 
-        {/* --- METRICS GRID --- */}
+        {/* --- METRICS GRID (Unchanged) --- */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
@@ -140,27 +134,19 @@ export default function CounselorDashboardPage() {
               </div>
               <div className="flex justify-between items-center text-center">
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {stats.periodStats.period1}
-                  </p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.periodStats.period1}</p>
                   <p className="text-xs text-gray-500">Period 1</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {stats.periodStats.period2}
-                  </p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.periodStats.period2}</p>
                   <p className="text-xs text-gray-500">Period 2</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {stats.periodStats.period3}
-                  </p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.periodStats.period3}</p>
                   <p className="text-xs text-gray-500">Period 3</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {stats.periodStats.period4}
-                  </p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.periodStats.period4}</p>
                   <p className="text-xs text-gray-500">Period 4</p>
                 </div>
               </div>
@@ -168,7 +154,7 @@ export default function CounselorDashboardPage() {
           </div>
         )}
 
-        {/* --- RECORDS TABLE --- */}
+        {/* --- RECORDS TABLE (Unchanged) --- */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="p-6 border-b border-gray-100 bg-gray-50">
             <h2 className="text-xl font-bold text-gray-800">Student Reports</h2>
@@ -176,22 +162,13 @@ export default function CounselorDashboardPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="p-4 text-sm font-semibold text-gray-600">
-                  Student
-                </th>
-                <th className="p-4 text-sm font-semibold text-gray-600">
-                  Period
-                </th>
-                <th className="p-4 text-sm font-semibold text-gray-600">
-                  Status
-                </th>
-                <th className="p-4 text-sm font-semibold text-gray-600 text-right">
-                  Actions
-                </th>
+                <th className="p-4 text-sm font-semibold text-gray-600">Student</th>
+                <th className="p-4 text-sm font-semibold text-gray-600">Period</th>
+                <th className="p-4 text-sm font-semibold text-gray-600">Status</th>
+                <th className="p-4 text-sm font-semibold text-gray-600 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {/* Added a fallback so if records is empty, it shows a friendly message */}
               {records.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="p-8 text-center text-gray-500">
@@ -217,24 +194,16 @@ export default function CounselorDashboardPage() {
                     </td>
                     <td className="p-4">
                       {record.status === "Needs_Review" && (
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          Needs Review
-                        </span>
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Needs Review</span>
                       )}
                       {record.status === "Reviewed_Completed" && (
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          Completed
-                        </span>
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Completed</span>
                       )}
                       {record.status === "Cancelled_By_Counselor" && (
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                          Cancelled
-                        </span>
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Cancelled</span>
                       )}
                       {record.status === "Cancelled_By_Student" && (
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                          Withdrawn
-                        </span>
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Withdrawn</span>
                       )}
                     </td>
                     <td className="p-4 text-right space-x-2">
@@ -266,15 +235,21 @@ export default function CounselorDashboardPage() {
           </table>
         </div>
 
-        {/* --- CANCELLATION MODAL --- */}
+        {/* --- IMPROVED CANCELLATION MODAL --- */}
         {cancelModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-8 rounded-xl shadow-xl max-w-md w-full">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Reject Report
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Please provide a reason. This will be visible to the student.
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full border border-slate-200">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="p-3 bg-red-100 text-red-600 rounded-full">
+                  <AlertTriangle className="w-6 h-6" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900">
+                  Reject Report
+                </h3>
+              </div>
+              
+              <p className="text-sm text-slate-600 mb-6 font-medium">
+                Please provide a clear reason for rejection. This will be sent directly to the student.
               </p>
 
               <textarea
@@ -282,22 +257,22 @@ export default function CounselorDashboardPage() {
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 placeholder="e.g., The document was blank, please upload your actual SWOT."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
+                className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/20 text-slate-900 placeholder-slate-400 font-medium resize-none transition-all mb-6"
               />
 
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => setCancelModalOpen(false)}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
+                  className="px-5 py-2.5 text-slate-700 bg-slate-100 hover:bg-slate-200 font-bold rounded-xl transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleCancelReport}
                   disabled={isCancelling}
-                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-red-400"
+                  className="px-5 py-2.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 disabled:opacity-50 transition-colors shadow-sm"
                 >
-                  {isCancelling ? "Rejecting..." : "Confirm Reject"}
+                  {isCancelling ? "Rejecting..." : "Confirm Rejection"}
                 </button>
               </div>
             </div>

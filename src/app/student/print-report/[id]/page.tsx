@@ -62,7 +62,7 @@ export default function StudentPrintReportPage() {
           <div>
             <div className="flex items-center space-x-3 mb-2">
               <University className="w-8 h-8 text-slate-900" />
-              <h1 className="text-2xl font-black tracking-tight uppercase text-slate-900">University Counseling</h1>
+              <h1 className="text-2xl font-black tracking-tight uppercase text-slate-900">Student Counseling Report</h1>
             </div>
             <h2 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Standardized SWOT & Growth Report</h2>
           </div>

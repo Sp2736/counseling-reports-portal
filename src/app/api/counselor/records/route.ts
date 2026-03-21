@@ -1,6 +1,7 @@
 // src/app/api/counselor/records/route.ts
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+// FIX: Corrected the import aliases to prevent 500 crashes
 import { authOptions } from "@/src/app/api/auth/[...nextauth]/route";
 import connectToDatabase from "@/src/lib/mongodb";
 import { CounselorProfile } from "@/src/models/CounselorProfile";

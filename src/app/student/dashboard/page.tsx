@@ -12,6 +12,10 @@ export default function StudentDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Modal State for viewing rejection reasons
+  const [reasonModalOpen, setReasonModalOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<any>(null);
+
   useEffect(() => {
     fetch("/api/student/records")
       .then((res) => {
@@ -47,10 +51,15 @@ export default function StudentDashboard() {
     }
   };
 
+  const openReasonModal = (report: any) => {
+    setSelectedReport(report);
+    setReasonModalOpen(true);
+  };
+
   if (isLoading) return <div className="p-8 text-center text-gray-500">Loading Dashboard...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50 p-8 relative">
       <div className="max-w-6xl mx-auto space-y-6">
         
         <div className="flex justify-between items-center mb-8">
@@ -95,7 +104,9 @@ export default function StudentDashboard() {
                       <td className="p-4 font-medium text-gray-900">Cycle {report.report_period || 1}</td>
                       <td className="p-4 text-gray-600">{new Date(report.createdAt).toLocaleDateString()}</td>
                       <td className="p-4">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
+                          report.status === 'Cancelled_By_Counselor' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
+                        }`}>
                           {report.status.replace(/_/g, " ")}
                         </span>
                       </td>
@@ -111,9 +122,18 @@ export default function StudentDashboard() {
                         {(report.status === "Pending_AI" || report.status === "Needs_Review") && (
                           <button
                             onClick={() => handleCancelUpload(report._id)}
-                            className="inline-flex items-center px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 rounded-md text-sm font-medium transition-colors"
+                            className="inline-flex items-center px-3 py-1.5 bg-slate-100 text-slate-700 hover:bg-red-50 hover:text-red-700 rounded-md text-sm font-medium transition-colors"
                           >
                             <XCircle className="w-4 h-4 mr-1.5" /> Cancel
+                          </button>
+                        )}
+                        {/* --- THE VIEW REASON BUTTON --- */}
+                        {report.status === "Cancelled_By_Counselor" && (
+                          <button
+                            onClick={() => openReasonModal(report)}
+                            className="inline-flex items-center px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 rounded-md text-sm font-medium transition-colors"
+                          >
+                            <AlertCircle className="w-4 h-4 mr-1.5" /> View Reason
                           </button>
                         )}
                       </td>
@@ -125,6 +145,39 @@ export default function StudentDashboard() {
           </div>
         </div>
       </div>
+
+      {/* --- REASON MODAL (For the Student) --- */}
+      {reasonModalOpen && selectedReport && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full border border-slate-200">
+            
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="p-3 bg-red-100 text-red-600 rounded-full">
+                <AlertCircle className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900">Report Rejected</h3>
+                <p className="text-sm text-slate-500">Cycle {selectedReport.report_period || 1} • {new Date(selectedReport.createdAt).toLocaleDateString()}</p>
+              </div>
+            </div>
+            
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 mb-6">
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Counselor's Reason</p>
+              <p className="text-sm text-slate-800 whitespace-pre-wrap leading-relaxed">
+                {selectedReport.counselor_review?.final_action_plan?.replace("Reason for Rejection:\n", "") || "No specific reason provided."}
+              </p>
+            </div>
+
+            <button 
+              onClick={() => setReasonModalOpen(false)} 
+              className="w-full px-5 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors shadow-md shadow-slate-900/20"
+            >
+              Close & Acknowledge
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

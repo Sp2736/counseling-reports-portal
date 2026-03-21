@@ -7,36 +7,36 @@ import { CounselingRecord } from "@/src/models/CounselingRecord";
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params;
+    // FIX: Unwrap Next.js 15 params
+    const resolvedParams = await params;
+    const recordId = resolvedParams.id;
     
     const session = await getServerSession(authOptions);
     if (!session?.user?.id || session.user.role !== "counselor") {
-      return NextResponse.json({ error: "Unauthorized access" }, { status: 403 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     const { cancellation_reason } = await req.json();
-
-    if (!cancellation_reason || cancellation_reason.trim() === "") {
-      return NextResponse.json({ error: "Cancellation reason is required." }, { status: 400 });
-    }
-
     await connectToDatabase();
 
+    // Save the reason into the counselor_review so the student can fetch it
     const record = await CounselingRecord.findByIdAndUpdate(
-      id,
+      recordId,
       { 
-        status: "Cancelled_By_Counselor",
-        cancellation_reason: cancellation_reason 
+        $set: { 
+          status: "Cancelled_By_Counselor",
+          counselor_review: {
+            final_risk_level: "N/A",
+            final_action_plan: `Reason for Rejection:\n${cancellation_reason || "No specific reason provided."}`,
+            reviewed_at: new Date()
+          }
+        } 
       },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
-    if (!record) {
-      return NextResponse.json({ error: "Record not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ message: "Report cancelled successfully." }, { status: 200 });
-
+    if (!record) return NextResponse.json({ error: "Record not found" }, { status: 404 });
+    return NextResponse.json({ message: "Rejected successfully" }, { status: 200 });
   } catch (error) {
     console.error("Counselor Cancel Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
