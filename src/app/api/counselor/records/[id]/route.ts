@@ -1,11 +1,11 @@
 // src/app/api/counselor/records/[id]/route.ts
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-// FIX: Corrected the import aliases
 import { authOptions } from "@/src/app/api/auth/[...nextauth]/route";
 import connectToDatabase from "@/src/lib/mongodb";
 import { CounselingRecord } from "@/src/models/CounselingRecord";
 import { StudentProfile } from "@/src/models/StudentProfile";
+import { CounselorProfile } from "@/src/models/CounselorProfile"; // Added Counselor Profile Model
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -24,6 +24,12 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         path: 'student',
         model: StudentProfile,
         select: 'fullName studentId department semester'
+      })
+      // NEW: Fetch the Counselor's Profile so we can use their name in the signature block
+      .populate({
+        path: 'assignedCounselor',
+        model: CounselorProfile,
+        select: 'fullName'
       })
       .lean();
 
