@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { UploadCloud, FileText, XCircle, Printer, CalendarClock, AlertCircle } from "lucide-react";
+import { UploadCloud, FileText, XCircle, Printer, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
 export default function StudentDashboard() {
@@ -12,7 +12,6 @@ export default function StudentDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Modal State for viewing rejection reasons
   const [reasonModalOpen, setReasonModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<any>(null);
 
@@ -84,7 +83,6 @@ export default function StudentDashboard() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="p-4 text-sm font-semibold text-gray-600">Period</th>
                   <th className="p-4 text-sm font-semibold text-gray-600">Date Submitted</th>
                   <th className="p-4 text-sm font-semibold text-gray-600">Status</th>
                   <th className="p-4 text-sm font-semibold text-gray-600 text-right">Action</th>
@@ -93,7 +91,7 @@ export default function StudentDashboard() {
               <tbody className="divide-y divide-gray-100">
                 {reports.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="p-12 text-center text-gray-500">
+                    <td colSpan={3} className="p-12 text-center text-gray-500">
                       <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                       <p>You haven't submitted any SWOT reports yet.</p>
                     </td>
@@ -101,8 +99,7 @@ export default function StudentDashboard() {
                 ) : (
                   reports.map((report) => (
                     <tr key={report._id} className="hover:bg-gray-50 transition-colors">
-                      <td className="p-4 font-medium text-gray-900">Cycle {report.report_period || 1}</td>
-                      <td className="p-4 text-gray-600">{new Date(report.createdAt).toLocaleDateString()}</td>
+                      <td className="p-4 text-gray-900 font-medium">{new Date(report.createdAt).toLocaleDateString()}</td>
                       <td className="p-4">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
                           report.status === 'Cancelled_By_Counselor' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
@@ -127,7 +124,6 @@ export default function StudentDashboard() {
                             <XCircle className="w-4 h-4 mr-1.5" /> Cancel
                           </button>
                         )}
-                        {/* --- THE VIEW REASON BUTTON --- */}
                         {report.status === "Cancelled_By_Counselor" && (
                           <button
                             onClick={() => openReasonModal(report)}
@@ -146,7 +142,6 @@ export default function StudentDashboard() {
         </div>
       </div>
 
-      {/* --- REASON MODAL (For the Student) --- */}
       {reasonModalOpen && selectedReport && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full border border-slate-200">
@@ -157,7 +152,7 @@ export default function StudentDashboard() {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-slate-900">Report Rejected</h3>
-                <p className="text-sm text-slate-500">Cycle {selectedReport.report_period || 1} • {new Date(selectedReport.createdAt).toLocaleDateString()}</p>
+                <p className="text-sm text-slate-500">{new Date(selectedReport.createdAt).toLocaleDateString()}</p>
               </div>
             </div>
             

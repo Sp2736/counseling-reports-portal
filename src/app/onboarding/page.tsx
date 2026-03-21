@@ -17,7 +17,7 @@ export default function OnboardingPage() {
     employeeId: "", // NEW: Added to state
     title: "Dr.", 
     fullName: "", 
-    department: "DCS",
+    department: "CSE",
     batchYear: "2024",
     startRollNo: "",
     endRollNo: ""
@@ -130,9 +130,9 @@ export default function OnboardingPage() {
                     value={counselorData.department}
                     onChange={e => setCounselorData({...counselorData, department: e.target.value})}
                   >
-                    <option value="DCS">DCS (Computer Science)</option>
-                    <option value="DCE">DCE (Computer Engineering)</option>
-                    <option value="DIT">DIT (Info Technology)</option>
+                    <option value="DCS">CSE (Computer Science & Engineering)</option>
+                    <option value="DCE">CE (Computer Engineering)</option>
+                    <option value="DIT">IT (Info Technology)</option>
                   </select>
                 </div>
                 <div className="w-1/2">
@@ -147,6 +147,7 @@ export default function OnboardingPage() {
                     <option value="2024">2024</option>
                     <option value="2025">2025</option>
                     <option value="2026">2026</option>
+                    {/* <option value="2027">2027</option> */}
                   </select>
                 </div>
               </div>
@@ -216,7 +217,7 @@ export default function OnboardingPage() {
                 >
                   <option value="">-- Select Your Assigned Counselor --</option>
                   {counselors.map(c => (
-                    <option key={c._id} value={c._id}>{c.fullName} ({c.department})</option>
+                    <option key={c._id} value={c._id}>{c.fullName}</option>
                   ))}
                 </select>
               </div>

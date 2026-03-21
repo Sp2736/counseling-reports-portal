@@ -14,7 +14,7 @@ export async function analyzeSWOTWithAI(text: string) {
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const prompt = `
-    You are an expert university academic counselor analyzing a student's self-assessment document. Analyze the following text. Respond strictly with a JSON object.
+    You are an expert university academic counselor analyzing a student's self-assessment document. Analyze the following text. Respond strictly with a JSON object. Be very clear and very specific for suggesting and counseling the student based on the given self-assessment document content.
 
   CRITICAL FORMATTING INSTRUCTIONS:
   For the generated_report section, you MUST adhere to these strict length constraints:

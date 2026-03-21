@@ -125,32 +125,7 @@ export default function CounselorDashboardPage() {
               </div>
             </div>
 
-            <div className="col-span-1 md:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <div className="flex items-center space-x-2 mb-3">
-                <BarChart3 className="w-5 h-5 text-gray-500" />
-                <h3 className="text-sm font-medium text-gray-700">
-                  Period-wise Breakdown
-                </h3>
-              </div>
-              <div className="flex justify-between items-center text-center">
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{stats.periodStats.period1}</p>
-                  <p className="text-xs text-gray-500">Period 1</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{stats.periodStats.period2}</p>
-                  <p className="text-xs text-gray-500">Period 2</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{stats.periodStats.period3}</p>
-                  <p className="text-xs text-gray-500">Period 3</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{stats.periodStats.period4}</p>
-                  <p className="text-xs text-gray-500">Period 4</p>
-                </div>
-              </div>
-            </div>
+            
           </div>
         )}
 

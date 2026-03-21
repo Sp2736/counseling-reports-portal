@@ -29,17 +29,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file was uploaded." }, { status: 400 });
     }
 
-    // Explicitly reject anything that isn't a DOCX
     const isDocx = file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.name.endsWith(".docx");
     if (!isDocx) {
       return NextResponse.json({ error: "Invalid file type. Please upload a .docx file." }, { status: 400 });
     }
 
-    // 1. Convert the uploaded file into a Node Buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // 2. Extract pure text using Mammoth
     const result = await mammoth.extractRawText({ buffer });
     const rawText = result.value;
 
@@ -48,37 +45,22 @@ export async function POST(req: Request) {
     }
 
     // --- SMART EXTRACTOR ---
-    // Look for patterns like "Semester,4", "Semester: 4", or "Semester 4" in the raw text
     const semesterMatch = rawText.match(/Semester\s*[,:-]?\s*(\d+)/i);
     const extractedSemester = semesterMatch ? parseInt(semesterMatch[1], 10) : null;
 
-    let currentPeriod = 1;
-
-    // If we successfully found the semester in the document:
     if (extractedSemester) {
-      // Update the Student's Global Profile
       await StudentProfile.findOneAndUpdate(
         { userId: session.user.id },
         { $set: { semester: extractedSemester } }
       );
-      currentPeriod = extractedSemester;
-    } else {
-      // Fallback: If no semester is found, calculate dynamic report period sequentially
-      const lastRecord = await CounselingRecord.findOne({ student: studentProfile._id }).sort({ createdAt: -1 });
-      if (lastRecord && lastRecord.report_period) {
-        currentPeriod = lastRecord.report_period < 8 ? lastRecord.report_period + 1 : 1;
-      }
     }
 
-    // 3. Send the clean text string directly to Gemini
     const aiResult = await analyzeSWOTWithAI(rawText);
 
-    // 4. Save the AI's output AND the raw text to the database
     const newRecord = await CounselingRecord.create({
       student: studentProfile._id,
       assignedCounselor: studentProfile.assignedCounselor,
       status: "Needs_Review", 
-      report_period: currentPeriod, // Uses extracted semester!
       original_submitted_text: rawText, 
       swot_input: aiResult.swot_input,
       ai_analysis: aiResult.ai_analysis,
@@ -87,10 +69,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Analysis Complete!", recordId: newRecord._id }, { status: 200 });
 
   } catch (error: any) {
-    // Keep the detailed error in the server console for the developer
     console.error("Document Processing Error:", error);
-    
-    // Return a clean, sanitized message to the student
     return NextResponse.json({ error: "An error occurred while processing your document. Please try again." }, { status: 500 });
   }
 }

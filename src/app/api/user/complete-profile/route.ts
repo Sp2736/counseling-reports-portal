@@ -19,8 +19,19 @@ export async function POST(req: Request) {
     if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
     if (user.role === "student") {
+      // 1. Extract the raw letters (e.g., "DCS")
       const deptMatch = data.studentId.match(/[a-zA-Z]+/);
-      const department = deptMatch ? deptMatch[0].toUpperCase() : "Unknown";
+      const rawDept = deptMatch ? deptMatch[0].toUpperCase() : "UNKNOWN";
+
+      // 2. THE DICTIONARY: Map the raw ID letters to the Display Department
+      const departmentMapping: Record<string, string> = {
+        "DCS": "CSE",
+        "DCE": "CE",
+        "DIT": "IT"
+      };
+
+      // 3. Translate it! (If they type something weird, it just uses what they typed)
+      const finalDepartment = departmentMapping[rawDept] || rawDept;
 
       await StudentProfile.findOneAndUpdate(
         { userId: user._id },
@@ -28,7 +39,7 @@ export async function POST(req: Request) {
           $set: {
             fullName: data.fullName,
             studentId: data.studentId.toUpperCase(),
-            department: department,
+            department: finalDepartment, // Saves as CSE, CE, or IT
             semester: 1,
             assignedCounselor: data.assignedCounselor
           }
@@ -45,7 +56,7 @@ export async function POST(req: Request) {
           $set: {
             employeeId: data.employeeId, // NEW: Save Employee ID
             fullName: combinedName,
-            department: data.department,
+            department: data.department, // Saves the dropdown value (CSE, CE, IT)
             batchYear: data.batchYear,
             startRollNo: data.startRollNo,
             endRollNo: data.endRollNo
