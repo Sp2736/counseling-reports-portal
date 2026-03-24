@@ -44,41 +44,41 @@ export default function AdminUsersPage() {
     }
   };
 
-  const inputStyles = "w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500";
+  const inputStyles = "w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base";
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
       <div className="max-w-3xl mx-auto">
         
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600 mt-1">Provision new accounts for the platform.</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">User Management</h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-1">Provision new accounts for the platform.</p>
         </div>
 
-        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex items-center space-x-3 mb-6 border-b border-gray-100 pb-4">
-            <UserPlus className="w-6 h-6 text-indigo-600" />
-            <h2 className="text-xl font-semibold text-gray-800">Add New User</h2>
+        <div className="bg-white p-5 sm:p-8 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center space-x-3 mb-5 sm:mb-6 border-b border-gray-100 pb-4">
+            <UserPlus className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Add New User</h2>
           </div>
 
           {status === "success" && (
             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-3">
-              <ShieldCheck className="h-5 w-5 text-green-600" />
-              <p className="text-sm font-medium text-green-800">{message}</p>
+              <ShieldCheck className="h-5 w-5 text-green-600 shrink-0" />
+              <p className="text-xs sm:text-sm font-medium text-green-800">{message}</p>
             </div>
           )}
 
           {status === "error" && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-3">
-              <AlertCircle className="h-5 w-5 text-red-600" />
-              <p className="text-sm font-medium text-red-800">{message}</p>
+              <AlertCircle className="h-5 w-5 text-red-600 shrink-0" />
+              <p className="text-xs sm:text-sm font-medium text-red-800">{message}</p>
             </div>
           )}
 
-          <form onSubmit={handleCreateUser} className="space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <form onSubmit={handleCreateUser} className="space-y-4 sm:space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Email Address</label>
                 <input 
                   type="email" 
                   required 
@@ -90,7 +90,7 @@ export default function AdminUsersPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Temporary Password</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Temporary Password</label>
                 <input 
                   type="password" 
                   required 
@@ -103,7 +103,7 @@ export default function AdminUsersPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Assign Role</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Assign Role</label>
               <select 
                 className={inputStyles}
                 value={role}
@@ -119,7 +119,7 @@ export default function AdminUsersPage() {
               <button 
                 type="submit" 
                 disabled={status === "loading"}
-                className="w-full md:w-auto px-6 py-2 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700 disabled:bg-indigo-400 transition-colors"
+                className="w-full sm:w-auto px-6 py-2.5 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700 disabled:bg-indigo-400 transition-colors text-sm sm:text-base flex justify-center items-center"
               >
                 {status === "loading" ? "Creating Account..." : "Create Account"}
               </button>

@@ -63,48 +63,48 @@ export default function StudentProfilePage() {
     }
   };
 
-  const inputStyles = "w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500";
+  const inputStyles = "w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base";
 
-  if (status === "loading") return <div className="p-8 text-center text-gray-500">Loading profile...</div>;
+  if (status === "loading") return <div className="p-4 sm:p-8 text-center text-gray-500">Loading profile...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-8 pb-24 sm:pb-8">
+      <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
         
         {/* Header */}
-        <div className="flex items-center space-x-4 mb-8">
-          <button onClick={() => router.push("/student/dashboard")} className="p-2 bg-white rounded-full shadow-sm hover:bg-gray-100 transition-colors">
-            <ArrowLeft className="w-5 h-5 text-gray-600" />
+        <div className="flex items-center space-x-3 sm:space-x-4 mb-6 sm:mb-8">
+          <button onClick={() => router.push("/student/dashboard")} className="p-1.5 sm:p-2 bg-white rounded-full shadow-sm hover:bg-gray-100 transition-colors shrink-0">
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
-            <p className="text-gray-600 mt-1">Manage your personal information and counselor assignment.</p>
+            <h1 className="text-xl sm:text-3xl font-bold text-gray-900">Profile Settings</h1>
+            <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">Manage your personal information and counselor assignment.</p>
           </div>
         </div>
 
-        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex items-center space-x-3 mb-6 border-b border-gray-100 pb-4">
-            <User className="w-6 h-6 text-indigo-600" />
-            <h2 className="text-xl font-semibold text-gray-800">Personal Details</h2>
+        <div className="bg-white p-5 sm:p-8 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center space-x-2 sm:space-x-3 mb-5 sm:mb-6 border-b border-gray-100 pb-3 sm:pb-4">
+            <User className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Personal Details</h2>
           </div>
 
           {status === "success" && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-3">
-              <ShieldCheck className="h-5 w-5 text-green-600" />
-              <p className="text-sm font-medium text-green-800">{message}</p>
+            <div className="mb-5 sm:mb-6 p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-3">
+              <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 shrink-0" />
+              <p className="text-xs sm:text-sm font-medium text-green-800">{message}</p>
             </div>
           )}
 
           {status === "error" && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-3">
-              <AlertCircle className="h-5 w-5 text-red-600" />
-              <p className="text-sm font-medium text-red-800">{message}</p>
+            <div className="mb-5 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-3">
+              <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 shrink-0" />
+              <p className="text-xs sm:text-sm font-medium text-red-800">{message}</p>
             </div>
           )}
 
-          <form onSubmit={handleUpdateProfile} className="space-y-5">
+          <form onSubmit={handleUpdateProfile} className="space-y-4 sm:space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Full Name</label>
               <input 
                 type="text" 
                 required 
@@ -114,19 +114,19 @@ export default function StudentProfilePage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Student ID (Read-Only)</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Student ID (Read-Only)</label>
                 <input 
                   type="text" 
                   disabled 
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed text-sm sm:text-base"
                   value={studentId}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Department</label>
                 <input 
                   type="text" 
                   required 
@@ -137,8 +137,8 @@ export default function StudentProfilePage() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-gray-100">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Counselor</label>
+            <div className="pt-3 sm:pt-4 border-t border-gray-100">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Assigned Counselor</label>
               <select 
                 required 
                 className={inputStyles}
@@ -152,11 +152,11 @@ export default function StudentProfilePage() {
               </select>
             </div>
 
-            <div className="pt-6 flex justify-end">
+            <div className="pt-4 sm:pt-6 flex justify-end">
               <button 
                 type="submit" 
                 disabled={status === "saving"}
-                className="flex items-center px-6 py-2 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700 disabled:bg-indigo-400 transition-colors"
+                className="w-full sm:w-auto flex justify-center items-center px-6 py-2.5 bg-indigo-600 text-white rounded-md text-sm sm:text-base font-medium hover:bg-indigo-700 disabled:bg-indigo-400 transition-colors"
               >
                 <Save className="w-4 h-4 mr-2" />
                 {status === "saving" ? "Saving Changes..." : "Save Profile"}

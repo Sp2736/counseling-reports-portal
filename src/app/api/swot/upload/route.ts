@@ -6,7 +6,6 @@ import connectToDatabase from "@/src/lib/mongodb";
 import { StudentProfile } from "@/src/models/StudentProfile";
 import { CounselingRecord } from "@/src/models/CounselingRecord";
 import { analyzeSWOTWithAI } from "@/src/lib/ai-service";
-import mammoth from "mammoth";
 
 export async function POST(req: Request) {
   try {
@@ -22,54 +21,73 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Student profile not found." }, { status: 404 });
     }
 
-    const formData = await req.formData();
-    const file = formData.get("file") as File;
+    // Parse the incoming JSON payload instead of FormData
+    const body = await req.json();
+    const { semester, strengths, weaknesses, opportunities, threats } = body;
 
-    if (!file) {
-      return NextResponse.json({ error: "No file was uploaded." }, { status: 400 });
+    // Validate inputs
+    if (!strengths || !weaknesses || !opportunities || !threats) {
+      return NextResponse.json({ error: "Please complete all SWOT sections before submitting." }, { status: 400 });
     }
 
-    const isDocx = file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.name.endsWith(".docx");
-    if (!isDocx) {
-      return NextResponse.json({ error: "Invalid file type. Please upload a .docx file." }, { status: 400 });
+    // Update the student's semester if provided
+    if (semester) {
+      const parsedSemester = parseInt(semester, 10);
+      if (!isNaN(parsedSemester)) {
+        await StudentProfile.findOneAndUpdate(
+          { userId: session.user.id },
+          { $set: { semester: parsedSemester } }
+        );
+      }
     }
 
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    // Reconstruct a raw text document format so the existing AI prompt functions without modification
+    const rawText = `
+Semester: ${semester || "Not specified"}
 
-    const result = await mammoth.extractRawText({ buffer });
-    const rawText = result.value;
+Strengths:
+${strengths}
 
-    if (!rawText || rawText.trim() === "") {
-      return NextResponse.json({ error: "The document appears to be empty or unreadable." }, { status: 400 });
-    }
+Weaknesses:
+${weaknesses}
 
-    // --- SMART EXTRACTOR ---
-    const semesterMatch = rawText.match(/Semester\s*[,:-]?\s*(\d+)/i);
-    const extractedSemester = semesterMatch ? parseInt(semesterMatch[1], 10) : null;
+Opportunities:
+${opportunities}
 
-    if (extractedSemester) {
-      await StudentProfile.findOneAndUpdate(
-        { userId: session.user.id },
-        { $set: { semester: extractedSemester } }
-      );
-    }
+Threats:
+${threats}
+    `.trim();
 
+    // Call the AI service with the constructed text
     const aiResult = await analyzeSWOTWithAI(rawText);
 
+    // Helper function to convert text area input (lines) into an array of strings for MongoDB
+    const splitIntoArray = (text: string) => {
+      return text
+        .split('\n')
+        .map(item => item.trim())
+        .filter(item => item.length > 0);
+    };
+
+    // Create the new record matching the Mongoose schema requirements
     const newRecord = await CounselingRecord.create({
       student: studentProfile._id,
       assignedCounselor: studentProfile.assignedCounselor,
       status: "Needs_Review", 
       original_submitted_text: rawText, 
-      swot_input: aiResult.swot_input,
+      swot_input: {
+        strengths: splitIntoArray(strengths),
+        weaknesses: splitIntoArray(weaknesses),
+        opportunities: splitIntoArray(opportunities),
+        threats: splitIntoArray(threats),
+      },
       ai_analysis: aiResult.ai_analysis,
     });
 
     return NextResponse.json({ message: "Analysis Complete!", recordId: newRecord._id }, { status: 200 });
 
   } catch (error: any) {
-    console.error("Document Processing Error:", error);
-    return NextResponse.json({ error: "An error occurred while processing your document. Please try again." }, { status: 500 });
+    console.error("Data Processing Error:", error);
+    return NextResponse.json({ error: "An error occurred while processing your submission. Please try again." }, { status: 500 });
   }
 }
