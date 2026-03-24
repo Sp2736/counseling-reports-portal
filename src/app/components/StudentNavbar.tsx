@@ -11,7 +11,7 @@ export default function StudentNavbar() {
 
   const links = [
     { name: "Dashboard", href: "/student/dashboard", icon: Home },
-    { name: "Upload Report", href: "/student/upload", icon: UploadCloud },
+    { name: "New Report", href: "/student/upload", icon: UploadCloud },
     { name: "My Profile", href: "/student/profile", icon: User },
   ];
 

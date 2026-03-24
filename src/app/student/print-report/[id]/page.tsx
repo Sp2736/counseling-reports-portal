@@ -254,11 +254,6 @@ export default function StudentPrintReportPage() {
                   {review ? "Review Finalized" : "Pending Review"}
                 </td>
               </tr>
-              <tr>
-                <td className="border border-black p-2 h-[40px]"></td>
-                <td className="border border-black p-2"></td>
-                <td className="border border-black p-2"></td>
-              </tr>
             </tbody>
           </table>
 
@@ -268,24 +263,21 @@ export default function StudentPrintReportPage() {
               <tr>
                 {/* 1. Student Block: Name High, Space for Signature Below */}
                 <td className="border border-black p-4 w-1/3 align-top text-center h-[120px]">
-                  <p className="font-bold text-[14px]">
-                    Student's Signature
-                  </p>
+                  <p className="font-bold text-[14px]">Student's Signature</p>
                 </td>
 
                 {/* 2. Counselor Name Block: Label top, Name at bottom */}
-                    <td className="border border-black p-4 w-1/3 text-center h-[120px] align-top">
-                      <div className="flex flex-col h-full">
-                        {/* This stays at the top */}
-                        <p className="font-bold text-[14px]">Counselor Name</p>
+                <td className="border border-black p-4 w-1/3 text-center h-[120px] align-top">
+                  <div className="flex flex-col h-full">
+                    {/* This stays at the top */}
+                    <p className="font-bold text-[14px]">Counselor Name</p>
 
-                        {/* mt-auto pushes this to the very bottom of the flex container */}
-                        <p className="font-bold text-[14px] mt-auto">
-                          {record.assignedCounselor?.fullName ||
-                            "Counselor Name"}
-                        </p>
-                      </div>
-                    </td>
+                    {/* mt-auto pushes this to the very bottom of the flex container */}
+                    <p className="font-bold text-[14px] mt-auto">
+                      {record.assignedCounselor?.fullName || "Counselor Name"}
+                    </p>
+                  </div>
+                </td>
 
                 {/* 3. Counselor Signature Block: Blank Space for Pen Signature */}
                 <td className="border border-black p-4 w-1/3 align-top text-center h-[120px]">
