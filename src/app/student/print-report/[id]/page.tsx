@@ -70,7 +70,7 @@ export default function StudentPrintReportPage() {
         <div className="max-w-[800px] mx-auto mb-6 flex justify-between items-center print:hidden bg-white p-4 rounded-xl shadow-sm border border-slate-200 font-sans">
           <button
             onClick={() => router.push("/student/dashboard")}
-            className="flex items-center text-slate-600 hover:text-slate-900 transition-colors"
+            className="flex items-center text-slate-600 hover:text-slate-900 cursor-pointer transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
           </button>
@@ -80,7 +80,7 @@ export default function StudentPrintReportPage() {
             </span>
             <button
               onClick={() => window.print()}
-              className="flex items-center bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors font-medium shadow-sm"
+              className="flex items-center bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors font-medium shadow-sm cursor-pointer"
             >
               <Printer className="w-4 h-4 mr-2" /> Print Official Form
             </button>
@@ -124,7 +124,7 @@ export default function StudentPrintReportPage() {
               <tr>
                 <td className="border border-black p-2 font-bold">Semester</td>
                 <td className="border border-black p-2">
-                  {record.student?.semester || "____"}
+                  {record.student?.semester || ""}
                 </td>
                 <td className="border border-black p-2 font-bold">
                   Department
@@ -269,17 +269,23 @@ export default function StudentPrintReportPage() {
                 {/* 1. Student Block: Name High, Space for Signature Below */}
                 <td className="border border-black p-4 w-1/3 align-top text-center h-[120px]">
                   <p className="font-bold text-[14px]">
-                    {record.student?.fullName || "Student Name"}'s Signature
+                    Student's Signature
                   </p>
                 </td>
 
-                {/* 2. Counselor Name Block: Centered Auto-populated Name */}
-                <td className="border border-black p-4 w-1/3 align-top text-center h-[120px]">
-                  <p className="font-bold text-[14px] mb-1">
-                    {record.assignedCounselor?.fullName || "Counselor Name"}{" "}
-                    (Counselor)
-                  </p>
-                </td>
+                {/* 2. Counselor Name Block: Label top, Name at bottom */}
+                    <td className="border border-black p-4 w-1/3 text-center h-[120px] align-top">
+                      <div className="flex flex-col h-full">
+                        {/* This stays at the top */}
+                        <p className="font-bold text-[14px]">Counselor Name</p>
+
+                        {/* mt-auto pushes this to the very bottom of the flex container */}
+                        <p className="font-bold text-[14px] mt-auto">
+                          {record.assignedCounselor?.fullName ||
+                            "Counselor Name"}
+                        </p>
+                      </div>
+                    </td>
 
                 {/* 3. Counselor Signature Block: Blank Space for Pen Signature */}
                 <td className="border border-black p-4 w-1/3 align-top text-center h-[120px]">
