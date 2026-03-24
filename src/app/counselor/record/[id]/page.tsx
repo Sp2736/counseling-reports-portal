@@ -404,11 +404,6 @@ export default function CounselorRecordReview({
                       {isReviewed ? "Review Finalized" : "Pending Approval"}
                     </td>
                   </tr>
-                  <tr>
-                    <td className="border border-black p-2 h-[40px]"></td>
-                    <td className="border border-black p-2"></td>
-                    <td className="border border-black p-2"></td>
-                  </tr>
                 </tbody>
               </table>
 
@@ -419,15 +414,17 @@ export default function CounselorRecordReview({
                     {/* 1. Student Block: Name High, Space for Signature Below */}
                     <td className="border border-black p-4 w-1/3 align-top text-center h-[120px]">
                       <p className="font-bold text-[14px]">
-                        {record.student?.fullName || "Student Name"}'s Signature
+                        Student's Signature
                       </p>
                     </td>
 
                     {/* 2. Counselor Name Block: Centered Auto-populated Name */}
-                    <td className="border border-black p-4 w-1/3 align-top text-center h-[120px]">
-                      <p className="font-bold text-[14px] mb-1">
-                        {record.assignedCounselor?.fullName || "Counselor Name"}{" "}
-                        (Counselor)
+                    <td className="border border-black p-4 w-1/3 text-center h-[120px]">
+                      <p className="font-bold align-top text-[14px] mb-1">
+                        Counselor Name
+</p>
+<p className="font-bold align-bottom text-[14px] mb-1">
+{record.assignedCounselor?.fullName || "Counselor Name"}
                       </p>
                     </td>
 
