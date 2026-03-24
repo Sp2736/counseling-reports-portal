@@ -1,112 +1,171 @@
-// src/app/counselor/students/[id]/page.tsx
+// src/app/counselor/students/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, User, FileText, Calendar, CheckCircle, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { Users, ChevronRight, User, AlertCircle } from "lucide-react";
 
-export default function CounselorStudentHistoryPage() {
-  const params = useParams();
-  const router = useRouter();
-  
-  const [student, setStudent] = useState<any>(null);
-  const [records, setRecords] = useState<any[]>([]);
+export default function CounselorStudentsPage() {
+  const [students, setStudents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`/api/counselor/students/${params.id}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to load student history");
+    fetch("/api/counselor/students")
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`Server Error: ${res.status}`);
         return res.json();
       })
       .then((data) => {
-        setStudent(data.student);
-        setRecords(data.records || []);
-        setIsLoading(false);
+        if (data.error) throw new Error(data.error);
+        setStudents(Array.isArray(data) ? data : []);
       })
       .catch((err) => {
-        setError(err.message);
+        console.error("Roster Loading Error:", err);
+        setError(err.message || "Failed to establish database connection.");
+      })
+      .finally(() => {
         setIsLoading(false);
       });
-  }, [params.id]);
+  }, []);
 
-  if (isLoading) return <div className="p-4 sm:p-8 text-center text-gray-500 text-sm sm:text-base">Loading Student History...</div>;
-  if (error || !student) return <div className="p-4 sm:p-8 text-center text-red-500 text-sm sm:text-base">{error || "Student not found."}</div>;
+  // Updated state handlers to prevent hanging screens
+  if (isLoading)
+    return (
+      <div className="p-4 sm:p-8 text-center text-gray-500 font-medium">
+        Loading Student Directory...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="p-8 max-w-lg mx-auto mt-12 bg-red-50 border border-red-200 rounded-xl text-center">
+        <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-3" />
+        <h3 className="text-lg font-bold text-red-800">
+          Directory Failed to Load
+        </h3>
+        <p className="text-red-600 mt-1 text-sm">{error}</p>
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8 pb-24 sm:pb-8">
-      <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
-        
-        {/* Navigation & Header */}
-        <div className="flex items-start sm:items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6">
-          <button onClick={() => router.push("/counselor/students")} className="p-1.5 sm:p-2 bg-white rounded-full shadow-sm hover:bg-gray-100 transition-colors mt-0.5 sm:mt-0 shrink-0">
-            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
-          </button>
-          <div>
-            <h1 className="text-xl sm:text-3xl font-bold text-gray-900 leading-tight">Student Profile & History</h1>
-            <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">Reviewing past counseling records and AI insights.</p>
-          </div>
+      <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            Student Directory
+          </h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-1">
+            View all students currently assigned to your matrix.
+          </p>
         </div>
 
-        {/* Student Info Card - Stacks on mobile */}
-        <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row items-center sm:items-start space-y-3 sm:space-y-0 sm:space-x-6 text-center sm:text-left">
-          <div className="h-14 w-14 sm:h-16 sm:w-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 shrink-0">
-            <User className="h-7 w-7 sm:h-8 sm:w-8" />
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-4 sm:p-6 border-b border-gray-100 flex items-center space-x-3 bg-gray-50/50">
+            <Users className="w-5 h-5 text-indigo-600" />
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+              Assigned Roster
+            </h2>
           </div>
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{student.fullName}</h2>
-            <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-4 mt-2 text-xs sm:text-sm text-gray-600">
-              <span className="flex items-center"><FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1"/> ID: {student.studentId}</span>
-              <span className="flex items-center"><Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1"/> Dept: {student.department}</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Submission History Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-6 sm:mt-8">
-          <div className="p-4 sm:p-6 border-b border-gray-100 bg-gray-50">
-            <h3 className="text-lg sm:text-xl font-bold text-gray-800">Reviewed Submission History</h3>
-          </div>
-          
           <div className="overflow-x-auto w-full">
-            <table className="w-full text-left border-collapse min-w-[600px]">
+            <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600">Period</th>
-                  <th className="p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600">Date Submitted</th>
-                  <th className="p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600">Status</th>
-                  <th className="p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600">Final Risk Level</th>
-                  <th className="p-3 sm:p-4 text-xs sm:text-sm font-semibold text-gray-600 text-right">Action</th>
+                <tr className="bg-white border-b border-gray-200">
+                  <th className="p-4 text-xs sm:text-sm font-semibold text-gray-600">
+                    Student Identity
+                  </th>
+                  <th className="p-4 text-xs sm:text-sm font-semibold text-gray-600">
+                    Contact / Email
+                  </th>
+                  <th className="p-4 text-xs sm:text-sm font-semibold text-gray-600">
+                    Counseling Status
+                  </th>
+                  <th className="p-4 text-xs sm:text-sm font-semibold text-gray-600">
+                    Latest Risk Factor
+                  </th>
+                  <th className="p-4 text-xs sm:text-sm font-semibold text-gray-600 text-right">
+                    View History
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {records.length === 0 ? (
-                  <tr><td colSpan={5} className="p-6 sm:p-8 text-center text-gray-500 text-sm sm:text-base">This student has no reviewed reports yet.</td></tr>
+                {students.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="p-8 sm:p-12 text-center text-gray-500"
+                    >
+                      <User className="w-10 h-10 sm:w-12 sm:h-12 text-gray-300 mx-auto mb-3" />
+                      <p className="text-sm sm:text-base">
+                        No students have been assigned to you yet.
+                      </p>
+                    </td>
+                  </tr>
                 ) : (
-                  records.map((record) => (
-                    <tr key={record._id} className="hover:bg-gray-50 transition-colors">
-                      <td className="p-3 sm:p-4 font-medium text-gray-900 text-sm sm:text-base whitespace-nowrap">Period {record.report_period || 1}</td>
-                      <td className="p-3 sm:p-4 text-gray-600 text-sm sm:text-base whitespace-nowrap">{new Date(record.createdAt).toLocaleDateString()}</td>
-                      <td className="p-3 sm:p-4 whitespace-nowrap">
-                        <span className="px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-green-100 text-green-800">Completed</span>
+                  students.map((student) => (
+                    <tr
+                      key={student._id}
+                      className="hover:bg-indigo-50/30 transition-colors group"
+                    >
+                      <td className="p-4 whitespace-nowrap">
+                        <div className="font-bold text-sm sm:text-base text-gray-900 group-hover:text-indigo-700 transition-colors">
+                          {student.fullName}
+                        </div>
+                        <div className="text-xs sm:text-sm text-gray-500 font-mono mt-0.5">
+                          ID: {student.studentId} • {student.department}
+                        </div>
                       </td>
-                      <td className="p-3 sm:p-4 whitespace-nowrap">
-                        {record.counselor_review?.final_risk_level ? (
-                          <span className={`font-medium text-sm sm:text-base ${record.counselor_review.final_risk_level === 'High' ? 'text-red-600' : 'text-gray-900'}`}>
-                            {record.counselor_review.final_risk_level}
+
+                      <td className="p-4 text-xs sm:text-sm text-gray-600 whitespace-nowrap">
+                        {student.email}
+                      </td>
+
+                      {/* NEW: Counseling Status Column */}
+                      <td className="p-4 whitespace-nowrap">
+                        <div className="flex flex-col space-y-1.5">
+                          {student.pendingCount > 0 ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] sm:text-xs font-bold bg-orange-100 text-orange-800 w-fit">
+                              {student.pendingCount} Action Required
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] sm:text-xs font-bold bg-slate-100 text-slate-600 w-fit">
+                              No Pending Action
+                            </span>
+                          )}
+                        </div>
+                      </td>
+
+                      {/* NEW: Latest Risk Factor Column */}
+                      <td className="p-4 whitespace-nowrap">
+                        {student.latestRiskLevel !== "N/A" ? (
+                          <span
+                            className={`inline-flex px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold ${
+                              student.latestRiskLevel === "High" ||
+                              student.latestRiskLevel === "Critical"
+                                ? "bg-red-100 text-red-700 border border-red-200"
+                                : student.latestRiskLevel === "Medium"
+                                  ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
+                                  : "bg-emerald-100 text-emerald-700 border border-emerald-200"
+                            }`}
+                          >
+                            {student.latestRiskLevel} Risk
                           </span>
                         ) : (
-                          <span className="text-gray-400">-</span>
+                          <span className="text-[10px] sm:text-xs text-gray-400 font-medium border border-gray-200 px-2.5 py-1 rounded-full bg-gray-50">
+                            No Data Available
+                          </span>
                         )}
                       </td>
-                      <td className="p-3 sm:p-4 text-right whitespace-nowrap">
-                        <Link 
-                          href={`/counselor/record/${record._id}`} 
-                          className="inline-flex items-center text-xs sm:text-sm font-medium text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-md"
+
+                      <td className="p-4 text-right whitespace-nowrap">
+                        <Link
+                          href={`/counselor/students/${student._id}`}
+                          className="inline-flex items-center justify-center p-2 sm:px-4 sm:py-2 bg-white border border-gray-200 text-gray-700 hover:text-indigo-700 hover:border-indigo-300 hover:bg-indigo-50 rounded-lg text-sm font-medium transition-all"
                         >
-                          View Report
+                          <span className="hidden sm:inline mr-1.5">
+                            Profile
+                          </span>
+                          <ChevronRight className="w-4 h-4" />
                         </Link>
                       </td>
                     </tr>
@@ -116,7 +175,6 @@ export default function CounselorStudentHistoryPage() {
             </table>
           </div>
         </div>
-
       </div>
     </div>
   );

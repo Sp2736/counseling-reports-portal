@@ -68,7 +68,7 @@ export default function CounselorProfilePage() {
       <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
         
         <div className="flex items-start sm:items-center space-x-3 sm:space-x-4 mb-6 sm:mb-8">
-          <button onClick={() => router.push("/counselor/waiting-list")} className="p-1.5 sm:p-2 bg-white rounded-full shadow-sm hover:bg-gray-100 transition-colors mt-0.5 sm:mt-0 shrink-0">
+          <button onClick={() => router.push("/counselor/waiting-list")} className="p-1.5 sm:p-2 bg-white rounded-full shadow-sm hover:bg-gray-100 transition-colors cursor-pointer mt-0.5 sm:mt-0 shrink-0">
             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
           </button>
           <div>
@@ -127,7 +127,7 @@ export default function CounselorProfilePage() {
             </div>
 
             <div className="pt-4 sm:pt-6 flex justify-end">
-              <button type="submit" disabled={status === "saving"} className="w-full sm:w-auto flex justify-center items-center px-6 py-2.5 bg-indigo-600 text-white rounded-md text-sm sm:text-base font-medium hover:bg-indigo-700 disabled:bg-indigo-400 transition-colors">
+              <button type="submit" disabled={status === "saving"} className="w-full sm:w-auto flex justify-center items-center px-6 py-2.5 bg-indigo-600 text-white rounded-md text-sm sm:text-base font-medium hover:bg-indigo-700 disabled:bg-indigo-400 cursor-pointer transition-colors">
                 <Save className="w-4 h-4 mr-1.5 sm:mr-2" />
                 {status === "saving" ? "Saving..." : "Save Settings"}
               </button>

@@ -55,7 +55,7 @@ export default function CounselorNavbar() {
             </span>
             <button
               onClick={() => signOut({ callbackUrl: "/login" })}
-              className="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors"
+              className="inline-flex items-center justify-center cursor-pointer p-2 rounded-md text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors"
               title="Log Out"
             >
               <LogOut className="h-5 w-5" />

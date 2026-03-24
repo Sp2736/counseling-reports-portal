@@ -241,7 +241,7 @@ export default function CounselorDashboardPage() {
                             </Link>
                             <button
                               onClick={() => openCancelModal(record._id)}
-                              className="inline-flex items-center px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-slate-100 text-slate-700 hover:bg-red-50 hover:text-red-700 rounded-md text-xs sm:text-sm font-medium transition-colors"
+                              className="inline-flex cursor-pointer items-center px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-slate-100 text-slate-700 hover:bg-red-50 hover:text-red-700 rounded-md text-xs sm:text-sm font-medium transition-colors"
                             >
                               <XCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
                               Reject
@@ -293,14 +293,14 @@ export default function CounselorDashboardPage() {
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setCancelModalOpen(false)}
-                className="px-4 sm:px-5 py-2 sm:py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-xl transition-colors text-sm sm:text-base"
+                className="px-4 cursor-pointer sm:px-5 py-2 sm:py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-xl transition-colors text-sm sm:text-base"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCancelReport}
                 disabled={isCancelling}
-                className={`px-4 sm:px-5 py-2 sm:py-2.5 font-bold rounded-xl text-white transition-colors shadow-sm text-sm sm:text-base ${
+                className={`px-4 sm:px-5 py-2 cursor-pointer sm:py-2.5 font-bold rounded-xl text-white transition-colors shadow-sm text-sm sm:text-base ${
                   isCancelling
                     ? "bg-red-400 cursor-not-allowed"
                     : "bg-red-600 hover:bg-red-700"

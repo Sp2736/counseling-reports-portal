@@ -108,7 +108,7 @@ export default function SignupPage() {
               />
             </div>
 
-            <button type="submit" disabled={isLoading} className="w-full mt-2 bg-indigo-600 text-white p-3.5 rounded-xl font-bold hover:bg-indigo-700 transition flex items-center justify-center group shadow-md">
+            <button type="submit" disabled={isLoading} className="w-full mt-2 cursor-pointer bg-indigo-600 text-white p-3.5 rounded-xl font-bold hover:bg-indigo-700 transition flex items-center justify-center group shadow-md">
               {isLoading ? "Creating Account..." : "Sign Up"}
               {!isLoading && <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />}
             </button>

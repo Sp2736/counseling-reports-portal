@@ -162,7 +162,7 @@ export default function StudentUploadPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full sm:w-auto flex justify-center items-center px-6 py-3 sm:py-2.5 rounded-lg text-white font-bold transition-colors text-sm sm:text-base ${
+              className={`w-full sm:w-auto cursor-pointer flex justify-center items-center px-6 py-3 sm:py-2.5 rounded-lg text-white font-bold transition-colors text-sm sm:text-base ${
                 isSubmitting ? "bg-indigo-300 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 shadow-sm"
               }`}
             >

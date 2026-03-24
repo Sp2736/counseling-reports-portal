@@ -19,21 +19,52 @@ export async function GET() {
     const counselor = await CounselorProfile.findOne({ userId: session.user.id });
     if (!counselor) return NextResponse.json({ error: "Profile not found" }, { status: 404 });
 
-    // 1. Get total students assigned to this counselor
-    const totalStudents = await StudentProfile.countDocuments({ assignedCounselor: counselor._id });
+    const counselorId = counselor._id;
 
-    // 2. Get all records for period-wise calculation
-    const records = await CounselingRecord.find({ assignedCounselor: counselor._id }, "report_period").lean();
+    // 1. Identify Dummy Students to exclude from all statistics
+    // (Using regex for case-insensitive matching e.g., "25dcs000" or "25DCS000")
+    const dummyProfiles = await StudentProfile.find({
+      $or: [
+        { studentId: { $regex: /^25dcs000$/i } },
+        { fullName: { $regex: /^dummy student$/i } }
+      ]
+    }).select('_id').lean();
     
-    const periodStats = {
-      period1: records.filter(r => (r.report_period || 1) === 1).length,
-      period2: records.filter(r => r.report_period === 2).length,
-      period3: records.filter(r => r.report_period === 3).length,
-      period4: records.filter(r => r.report_period === 4).length,
-    };
+    // Extract just the ObjectIds of the dummy accounts
+    const dummyIds = dummyProfiles.map(profile => profile._id);
 
-    return NextResponse.json({ totalStudents, totalSubmitted: records.length, periodStats }, { status: 200 });
+    // 2. Fetch precise counts while strictly EXCLUDING the dummy records
+    const totalStudents = await StudentProfile.countDocuments({ 
+      assignedCounselor: counselorId,
+      _id: { $nin: dummyIds } // Don't count dummy accounts as real students
+    });
+
+    const totalReports = await CounselingRecord.countDocuments({ 
+      assignedCounselor: counselorId,
+      student: { $nin: dummyIds } // Don't count dummy reports in total reviews
+    });
+
+    const pendingAI = await CounselingRecord.countDocuments({ 
+      assignedCounselor: counselorId, 
+      student: { $nin: dummyIds },
+      status: "Pending_AI" 
+    });
+
+    const needsReview = await CounselingRecord.countDocuments({ 
+      assignedCounselor: counselorId, 
+      student: { $nin: dummyIds },
+      status: "Needs_Review" 
+    });
+
+    return NextResponse.json({ 
+      totalStudents, 
+      totalReports, 
+      pendingAI, 
+      needsReview 
+    }, { status: 200 });
+    
   } catch (error) {
+    console.error("Fetch Counselor Stats Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -70,7 +70,7 @@ export default function StudentPrintReportPage() {
         <div className="max-w-[800px] mx-auto mb-6 flex justify-between items-center print:hidden bg-white p-4 rounded-xl shadow-sm border border-slate-200 font-sans">
           <button
             onClick={() => router.push("/student/dashboard")}
-            className="flex items-center text-slate-600 hover:text-slate-900 cursor-pointer transition-colors"
+            className="flex items-center cursor-pointer text-slate-600 hover:text-slate-900 cursor-pointer transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
           </button>
@@ -80,7 +80,7 @@ export default function StudentPrintReportPage() {
             </span>
             <button
               onClick={() => window.print()}
-              className="flex items-center bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors font-medium shadow-sm cursor-pointer"
+              className="flex items-center cursor-pointer bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors font-medium shadow-sm cursor-pointer"
             >
               <Printer className="w-4 h-4 mr-2" /> Print Official Form
             </button>

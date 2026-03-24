@@ -174,7 +174,7 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              <button type="submit" disabled={isSubmitting} className="w-full mt-5 sm:mt-6 bg-indigo-600 text-white p-3 sm:p-3.5 rounded-xl font-bold hover:bg-indigo-700 transition flex items-center justify-center group shadow-md text-sm sm:text-base">
+              <button type="submit" disabled={isSubmitting} className="w-full cursor-pointer mt-5 sm:mt-6 bg-indigo-600 text-white p-3 sm:p-3.5 rounded-xl font-bold hover:bg-indigo-700 transition flex items-center justify-center group shadow-md text-sm sm:text-base">
                 {isSubmitting ? "Saving Profile..." : "Enter Command Center"}
                 {!isSubmitting && <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 ml-1.5 sm:ml-2 group-hover:translate-x-1 transition-transform" />}
               </button>
@@ -221,7 +221,7 @@ export default function OnboardingPage() {
                 </select>
               </div>
 
-              <button type="submit" disabled={isSubmitting} className="w-full mt-5 sm:mt-6 bg-slate-900 text-white p-3 sm:p-3.5 rounded-xl font-bold hover:bg-slate-800 transition flex items-center justify-center group shadow-md text-sm sm:text-base">
+              <button type="submit" disabled={isSubmitting} className="w-full cursor-pointer mt-5 sm:mt-6 bg-slate-900 text-white p-3 sm:p-3.5 rounded-xl font-bold hover:bg-slate-800 transition flex items-center justify-center group shadow-md text-sm sm:text-base">
                 {isSubmitting ? "Activating Profile..." : "Access Dashboard"}
                 {!isSubmitting && <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 ml-1.5 sm:ml-2 group-hover:translate-x-1 transition-transform" />}
               </button>

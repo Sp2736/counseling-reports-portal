@@ -5,11 +5,17 @@ import { authOptions } from "@/src/app/api/auth/[...nextauth]/route";
 import connectToDatabase from "@/src/lib/mongodb";
 import { StudentProfile } from "@/src/models/StudentProfile";
 import { CounselingRecord } from "@/src/models/CounselingRecord";
+import mongoose from "mongoose";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     
+    // SAFETY CHECK: Prevents the "Cast to ObjectId failed" 500 server crash
+    if (!id || id === "undefined" || !mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: "Invalid student identifier format." }, { status: 400 });
+    }
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.id || session.user.role !== "counselor") {
       return NextResponse.json({ error: "Unauthorized access" }, { status: 403 });

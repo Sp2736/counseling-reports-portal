@@ -70,7 +70,7 @@ export default function LoginPage() {
               />
             </div>
 
-            <button type="submit" disabled={isLoading} className="w-full mt-2 bg-slate-900 text-white p-3.5 rounded-xl font-bold hover:bg-slate-800 transition flex items-center justify-center group shadow-md">
+            <button type="submit" disabled={isLoading} className="w-full cursor-pointer mt-2 bg-slate-900 text-white p-3.5 rounded-xl font-bold hover:bg-slate-800 transition flex items-center justify-center group shadow-md">
               {isLoading ? "Authenticating..." : "Log In"}
               {!isLoading && <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />}
             </button>

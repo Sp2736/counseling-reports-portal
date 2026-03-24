@@ -117,7 +117,7 @@ export default function StudentDashboard() {
                         {report.status === "Reviewed_Completed" && (
                           <button
                             onClick={() => handlePrint(report._id)}
-                            className="inline-flex items-center px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-md text-xs sm:text-sm font-medium transition-colors"
+                            className="inline-flex items-center px-2.5 cursor-pointer py-1.5 sm:px-3 sm:py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-md text-xs sm:text-sm font-medium transition-colors"
                           >
                             <Printer className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" /> Print Report
                           </button>
@@ -125,7 +125,7 @@ export default function StudentDashboard() {
                         {(report.status === "Pending_AI" || report.status === "Needs_Review") && (
                           <button
                             onClick={() => handleCancelUpload(report._id)}
-                            className="inline-flex items-center px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-slate-100 text-slate-700 hover:bg-red-50 hover:text-red-700 rounded-md text-xs sm:text-sm font-medium transition-colors"
+                            className="inline-flex cursor-pointer items-center px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-slate-100 text-slate-700 hover:bg-red-50 hover:text-red-700 rounded-md text-xs sm:text-sm font-medium transition-colors"
                           >
                             <XCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" /> Cancel
                           </button>
@@ -133,7 +133,7 @@ export default function StudentDashboard() {
                         {report.status === "Cancelled_By_Counselor" && (
                           <button
                             onClick={() => openReasonModal(report)}
-                            className="inline-flex items-center px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-red-50 text-red-700 hover:bg-red-100 rounded-md text-xs sm:text-sm font-medium transition-colors"
+                            className="inline-flex cursor-pointer items-center px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-red-50 text-red-700 hover:bg-red-100 rounded-md text-xs sm:text-sm font-medium transition-colors"
                           >
                             <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" /> View Reason
                           </button>
@@ -171,7 +171,7 @@ export default function StudentDashboard() {
 
             <button 
               onClick={() => setReasonModalOpen(false)} 
-              className="w-full px-5 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors shadow-md shadow-slate-900/20"
+              className="w-full px-5 py-3 bg-slate-900 text-white cursor-pointer font-bold rounded-xl hover:bg-slate-800 transition-colors shadow-md shadow-slate-900/20"
             >
               Close & Acknowledge
             </button>

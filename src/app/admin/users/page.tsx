@@ -119,7 +119,7 @@ export default function AdminUsersPage() {
               <button 
                 type="submit" 
                 disabled={status === "loading"}
-                className="w-full sm:w-auto px-6 py-2.5 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700 disabled:bg-indigo-400 transition-colors text-sm sm:text-base flex justify-center items-center"
+                className="w-full sm:w-auto px-6 py-2.5 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700 disabled:bg-indigo-400 transition-colors text-sm sm:text-base flex justify-center items-center cursor-pointer"
               >
                 {status === "loading" ? "Creating Account..." : "Create Account"}
               </button>

@@ -73,7 +73,7 @@ export default function StudentProfilePage() {
         
         {/* Header */}
         <div className="flex items-center space-x-3 sm:space-x-4 mb-6 sm:mb-8">
-          <button onClick={() => router.push("/student/dashboard")} className="p-1.5 sm:p-2 bg-white rounded-full shadow-sm hover:bg-gray-100 transition-colors shrink-0">
+          <button onClick={() => router.push("/student/dashboard")} className="p-1.5 cursor-pointer sm:p-2 bg-white rounded-full shadow-sm hover:bg-gray-100 transition-colors shrink-0">
             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
           </button>
           <div>
@@ -156,7 +156,7 @@ export default function StudentProfilePage() {
               <button 
                 type="submit" 
                 disabled={status === "saving"}
-                className="w-full sm:w-auto flex justify-center items-center px-6 py-2.5 bg-indigo-600 text-white rounded-md text-sm sm:text-base font-medium hover:bg-indigo-700 disabled:bg-indigo-400 transition-colors"
+                className="w-full sm:w-auto flex justify-center cursor-pointer items-center px-6 py-2.5 bg-indigo-600 text-white rounded-md text-sm sm:text-base font-medium hover:bg-indigo-700 disabled:bg-indigo-400 transition-colors"
               >
                 <Save className="w-4 h-4 mr-2" />
                 {status === "saving" ? "Saving Changes..." : "Save Profile"}
