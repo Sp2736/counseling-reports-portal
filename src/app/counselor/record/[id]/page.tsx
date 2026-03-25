@@ -112,7 +112,6 @@ export default function CounselorRecordReview({
       {/* Reduced bottom padding for mobile tabs */}
       <div className="min-h-screen bg-slate-100 p-4 sm:p-6 md:p-8 pb-24 sm:pb-8 print:bg-white print:p-0">
         <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 print:space-y-0">
-          
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-200 print:hidden font-sans gap-3 sm:gap-4">
             <div className="flex items-center space-x-3 sm:space-x-4 w-full md:w-auto">
               <button
@@ -170,10 +169,10 @@ export default function CounselorRecordReview({
               so they can reference text/AI and scroll down to the actual document 
             */}
             <div className="lg:col-span-4 space-y-4 sm:space-y-6 lg:sticky lg:top-24 print:hidden font-sans">
-              
               <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200">
                 <h2 className="text-xs sm:text-sm font-bold text-slate-800 mb-2 sm:mb-3 flex items-center uppercase tracking-wider">
-                  <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 text-slate-500" /> Raw Student Text
+                  <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 text-slate-500" />{" "}
+                  Raw Student Text
                 </h2>
                 <div className="bg-slate-50 p-3 sm:p-4 rounded-md text-xs text-slate-700 whitespace-pre-wrap h-[150px] sm:h-[300px] overflow-y-auto border border-slate-100 font-mono leading-relaxed">
                   {record.original_submitted_text || "No raw text available."}
@@ -182,7 +181,8 @@ export default function CounselorRecordReview({
 
               <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200">
                 <h2 className="text-xs sm:text-sm font-bold text-slate-800 mb-2 sm:mb-3 flex items-center uppercase tracking-wider">
-                  <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 text-indigo-600" /> AI Diagnostic Summary
+                  <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 text-indigo-600" />{" "}
+                  AI Diagnostic Summary
                 </h2>
                 {ai ? (
                   <div className="space-y-3 sm:space-y-4 text-xs sm:text-sm">
@@ -219,7 +219,8 @@ export default function CounselorRecordReview({
             </div>
 
             {/* Document wrapper needs full overflow control so tables don't break flex on tiny screens */}
-            <div className="lg:col-span-8 bg-white border border-gray-300 shadow-xl p-4 sm:p-8 md:p-10 text-[11px] sm:text-[13px] leading-relaxed text-black w-full overflow-x-auto print:overflow-visible print:col-span-12 print:border-none print:shadow-none print:p-0 print:max-w-none"
+            <div
+              className="lg:col-span-8 bg-white border border-gray-300 shadow-xl p-4 sm:p-8 md:p-10 text-[11px] sm:text-[13px] leading-relaxed text-black w-full overflow-x-auto print:overflow-visible print:col-span-12 print:border-none print:shadow-none print:p-0 print:max-w-none"
               style={{ fontFamily: "Cambria, Georgia, serif" }}
             >
               {/* Force minimum width on mobile so the official layout styling remains intact instead of squishing illegibly */}
@@ -229,9 +230,10 @@ export default function CounselorRecordReview({
                     CHAROTAR UNIVERSITY OF SCIENCE AND TECHNOLOGY (CHARUSAT)
                   </h1>
                   <h2 className="font-bold text-[12px] sm:text-[14px] uppercase mt-1">
-                    DEVANG PATEL INSTITUTE OF ADVANCE TECHNOLOGY AND RESEARCH (DEPSTAR)
+                    DEVANG PATEL INSTITUTE OF ADVANCE TECHNOLOGY AND RESEARCH
+                    (DEPSTAR)
                   </h2>
-                  <h3 className="font-bold text-[12px] sm:text-[14px] underline mt-3 sm:mt-4">
+                  <h3 className="font-bold text-[12px] sm:text-[14px] mt-3 sm:mt-4">
                     Student Counseling – SWOT Analysis Form
                   </h3>
                 </div>
@@ -257,7 +259,7 @@ export default function CounselorRecordReview({
                         Semester
                       </td>
                       <td className="border border-black p-1.5 sm:p-2">
-                        {record.student?.semester || ""}
+                        {record.student?.semester || "2"}
                       </td>
                       <td className="border border-black p-1.5 sm:p-2 font-bold">
                         Department
@@ -267,8 +269,12 @@ export default function CounselorRecordReview({
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-black p-1.5 sm:p-2 font-bold">Date</td>
-                      <td className="border border-black p-1.5 sm:p-2">{docDate}</td>
+                      <td className="border border-black p-1.5 sm:p-2 font-bold">
+                        Date
+                      </td>
+                      <td className="border border-black p-1.5 sm:p-2">
+                        {docDate}
+                      </td>
                       <td className="border border-black p-1.5 sm:p-2 font-bold">
                         Risk Level
                       </td>
@@ -285,21 +291,24 @@ export default function CounselorRecordReview({
                             <option value="High">High</option>
                           </select>
                         ) : (
-                          record.counselor_review?.final_risk_level || "Low / Medium / High"
+                          record.counselor_review?.final_risk_level ||
+                          "Low / Medium / High"
                         )}
                       </td>
                     </tr>
                   </tbody>
                 </table>
 
-                <div className="text-center font-bold text-[12px] sm:text-[14px] underline mb-1.5 sm:mb-2 text-black">
+                <div className="font-bold text-[12px] sm:text-[14px] mb-1.5 sm:mb-2 text-black">
                   SWOT Analysis
                 </div>
                 <table className="w-full border-collapse border border-black mb-5 sm:mb-6 table-fixed text-black">
                   <tbody>
                     <tr>
                       <td className="border border-black p-2 sm:p-3 w-1/2 align-top">
-                        <div className="font-bold mb-1.5 sm:mb-2">Strengths</div>
+                        <div className="font-bold mb-1.5 sm:mb-2">
+                          Strengths
+                        </div>
                         <ul className="list-disc pl-4 sm:pl-5 m-0 space-y-0.5">
                           {swot.strengths?.length > 0 ? (
                             swot.strengths.map((item: string, i: number) => (
@@ -311,7 +320,9 @@ export default function CounselorRecordReview({
                         </ul>
                       </td>
                       <td className="border border-black p-2 sm:p-3 w-1/2 align-top">
-                        <div className="font-bold mb-1.5 sm:mb-2">Weaknesses</div>
+                        <div className="font-bold mb-1.5 sm:mb-2">
+                          Weaknesses
+                        </div>
                         <ul className="list-disc pl-4 sm:pl-5 m-0 space-y-0.5">
                           {swot.weaknesses?.length > 0 ? (
                             swot.weaknesses.map((item: string, i: number) => (
@@ -325,12 +336,16 @@ export default function CounselorRecordReview({
                     </tr>
                     <tr>
                       <td className="border border-black p-2 sm:p-3 w-1/2 align-top">
-                        <div className="font-bold mb-1.5 sm:mb-2">Opportunities</div>
+                        <div className="font-bold mb-1.5 sm:mb-2">
+                          Opportunities
+                        </div>
                         <ul className="list-disc pl-4 sm:pl-5 m-0 space-y-0.5">
                           {swot.opportunities?.length > 0 ? (
-                            swot.opportunities.map((item: string, i: number) => (
-                              <li key={i}>{item}</li>
-                            ))
+                            swot.opportunities.map(
+                              (item: string, i: number) => (
+                                <li key={i}>{item}</li>
+                              ),
+                            )
                           ) : (
                             <li>_________________________</li>
                           )}
@@ -354,7 +369,9 @@ export default function CounselorRecordReview({
 
                 <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4 text-black">
                   <div>
-                    <span className="font-bold">Counselor Findings: </span>
+                    <span className="font-bold text-[14px]">
+                      Counselor Findings:{" "}
+                    </span>
                     <br />
                     <div className="mt-1 min-h-[40px] whitespace-pre-wrap">
                       {ai?.generated_report?.counselor_findings ||
@@ -362,7 +379,9 @@ export default function CounselorRecordReview({
                     </div>
                   </div>
                   <div>
-                    <span className="font-bold">Outcome / Action Plan: </span>
+                    <span className="font-bold text-[14px]">
+                      Outcome / Action Plan:{" "}
+                    </span>
                     <br />
                     {!isReviewed ? (
                       <textarea
@@ -382,7 +401,7 @@ export default function CounselorRecordReview({
                   </div>
                 </div>
 
-                <div className="font-bold text-[12px] sm:text-[14px] mb-1.5 sm:mb-2 underline text-black">
+                <div className="font-bold text-[12px] sm:text-[14px] mb-1.5 sm:mb-2 text-black">
                   Counseling Meeting Record
                 </div>
                 <table className="w-full border-collapse border border-black mb-8 sm:mb-12 text-black">
@@ -401,15 +420,9 @@ export default function CounselorRecordReview({
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-black p-1.5 sm:p-2 h-[35px] sm:h-[40px]">
-                        {docDate}
-                      </td>
-                      <td className="border border-black p-1.5 sm:p-2">
-                        Routine SWOT Assessment & Growth Mapping
-                      </td>
-                      <td className="border border-black p-1.5 sm:p-2">
-                        {isReviewed ? "Review Finalized" : "Pending Approval"}
-                      </td>
+                      <td className="border border-black p-1.5 sm:p-2 h-[35px] sm:h-[40px]"></td>
+                      <td className="border border-black p-1.5 sm:p-2"></td>
+                      <td className="border border-black p-1.5 sm:p-2"></td>
                     </tr>
                   </tbody>
                 </table>
@@ -419,22 +432,25 @@ export default function CounselorRecordReview({
                     <tr>
                       <td className="border border-black p-3 sm:p-4 w-1/3 align-top text-center h-[90px] sm:h-[120px]">
                         <p className="font-bold text-[12px] sm:text-[14px]">
-                          Student's Signature
+                          Student Signature
                         </p>
                       </td>
 
                       <td className="border border-black p-3 sm:p-4 w-1/3 text-center h-[90px] sm:h-[120px] align-top">
                         <div className="flex flex-col h-full">
-                          <p className="font-bold text-[12px] sm:text-[14px]">Counselor Name</p>
+                          <p className="font-bold text-[12px] sm:text-[14px]">
+                            Counselor Name
+                          </p>
                           <p className="font-bold text-[12px] sm:text-[14px] mt-auto truncate px-1">
-                            {record.assignedCounselor?.fullName || "Counselor Name"}
+                            {record.assignedCounselor?.fullName ||
+                              "Counselor Name"}
                           </p>
                         </div>
                       </td>
 
                       <td className="border border-black p-3 sm:p-4 w-1/3 align-top text-center h-[90px] sm:h-[120px]">
                         <p className="font-bold text-[12px] sm:text-[14px]">
-                          Signature of Counselor
+                          Counselor Signature
                         </p>
                       </td>
                     </tr>
