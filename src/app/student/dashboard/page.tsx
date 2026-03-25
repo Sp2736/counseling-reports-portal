@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { UploadCloud, FileText, XCircle, Printer, AlertCircle } from "lucide-react";
+import { UploadCloud, FileText, XCircle, Printer, AlertCircle, Bot } from "lucide-react";
 import Link from "next/link";
 
 export default function StudentDashboard() {
@@ -58,17 +58,14 @@ export default function StudentDashboard() {
   if (isLoading) return <div className="p-4 sm:p-8 text-center text-gray-500">Loading Dashboard...</div>;
 
   return (
-    // Reduced padding on mobile (p-4), standard padding on larger screens (sm:p-8)
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8 relative pb-24 sm:pb-8">
       <div className="max-w-6xl mx-auto space-y-6">
         
-        {/* Changed to flex-col on mobile so the button drops below the text */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-4 sm:mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Student Dashboard</h1>
             <p className="text-sm sm:text-base text-gray-600 mt-1">Track your counseling reports and academic growth.</p>
           </div>
-          {/* Button takes full width on mobile for easier tapping */}
           <Link 
             href="/student/upload" 
             className="flex items-center justify-center w-full sm:w-auto bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium"
@@ -82,7 +79,6 @@ export default function StudentDashboard() {
             <h2 className="text-lg sm:text-xl font-bold text-gray-800">Your Submission History</h2>
           </div>
           
-          {/* Added full-width scroll container specifically for the table */}
           <div className="overflow-x-auto w-full">
             <table className="w-full text-left border-collapse min-w-[600px]">
               <thead>
@@ -107,11 +103,17 @@ export default function StudentDashboard() {
                         {new Date(report.createdAt).toLocaleDateString()}
                       </td>
                       <td className="p-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold ${
-                          report.status === 'Cancelled_By_Counselor' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {report.status.replace(/_/g, " ")}
-                        </span>
+                        {report.status === "Pending_AI" ? (
+                          <span className="inline-flex items-center px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-yellow-100 text-yellow-800">
+                             <span className="w-2 h-2 mr-1.5 bg-yellow-500 rounded-full animate-pulse"></span> Processing Analysis
+                          </span>
+                        ) : (
+                          <span className={`inline-flex items-center px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold ${
+                            report.status === 'Cancelled_By_Counselor' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {report.status.replace(/_/g, " ")}
+                          </span>
+                        )}
                       </td>
                       <td className="p-4 text-right space-x-2 whitespace-nowrap">
                         {report.status === "Reviewed_Completed" && (

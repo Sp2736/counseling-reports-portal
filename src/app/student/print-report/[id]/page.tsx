@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Printer, ArrowLeft } from "lucide-react";
+import { Printer, ArrowLeft, Bot } from "lucide-react";
 
 export default function StudentPrintReportPage() {
   const params = useParams();
@@ -31,7 +31,7 @@ export default function StudentPrintReportPage() {
   if (isLoading)
     return (
       <div className="p-8 text-center text-slate-500 print:hidden">
-        Generating Official Document...
+        Loading Document...
       </div>
     );
   if (!record)
@@ -40,6 +40,31 @@ export default function StudentPrintReportPage() {
         Document not found.
       </div>
     );
+
+  // PREVENT PRINTING IF AI IS PENDING
+  if (record.status === "Pending_AI") {
+     return (
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+          <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-center space-y-4">
+            <div className="flex justify-center mb-4">
+              <div className="p-4 bg-yellow-50 rounded-full inline-block">
+                <Bot className="w-10 h-10 text-yellow-600 animate-pulse" />
+              </div>
+            </div>
+            <h2 className="text-xl font-bold text-slate-900">Analysis Pending</h2>
+            <p className="text-slate-600 text-sm">
+              Your submission is currently in the queue for processing. It cannot be printed until it is reviewed by a counselor.
+            </p>
+            <button 
+              onClick={() => router.push('/student/dashboard')}
+              className="mt-6 inline-flex items-center px-5 py-2.5 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Return to Dashboard
+            </button>
+          </div>
+        </div>
+     );
+  }
 
   const swot = record.swot_input || {
     strengths: [],
@@ -64,9 +89,8 @@ export default function StudentPrintReportPage() {
       `,
         }}
       />
-
+      {/* Rest of the document template remains exactly the same... */}
       <div className="min-h-screen bg-slate-100 p-4 md:p-8 print:bg-white print:p-0">
-        {/* Top Action Bar */}
         <div className="max-w-[800px] mx-auto mb-6 flex justify-between items-center print:hidden bg-white p-4 rounded-xl shadow-sm border border-slate-200 font-sans">
           <button
             onClick={() => router.push("/student/dashboard")}
@@ -87,7 +111,6 @@ export default function StudentPrintReportPage() {
           </div>
         </div>
 
-        {/* --- OFFICIAL WORD DOCUMENT CANVAS --- */}
         <div
           className="max-w-[800px] mx-auto bg-white border border-gray-300 shadow-xl p-10 print:border-none print:shadow-none print:p-0 print:max-w-none text-[13px] leading-relaxed text-black"
           style={{ fontFamily: "Cambria, Georgia, serif" }}
@@ -253,29 +276,23 @@ export default function StudentPrintReportPage() {
             </tbody>
           </table>
 
-          {/* THE FIX: STRICT TABLE LAYOUT FOR SIGNATURES */}
           <table className="w-full border-collapse border border-black mt-8 text-black table-fixed break-inside-avoid">
             <tbody>
               <tr>
-                {/* 1. Student Block: Name High, Space for Signature Below */}
                 <td className="border border-black p-4 w-1/3 align-top text-center h-[120px]">
                   <p className="font-bold text-[14px]">Student Signature</p>
                 </td>
 
-                {/* 2. Counselor Name Block: Label top, Name at bottom */}
                 <td className="border border-black p-4 w-1/3 text-center h-[120px] align-top">
                   <div className="flex flex-col h-full">
-                    {/* This stays at the top */}
                     <p className="font-bold text-[14px]">Counselor Name</p>
 
-                    {/* mt-auto pushes this to the very bottom of the flex container */}
                     <p className="font-bold text-[14px] mt-auto">
                       {record.assignedCounselor?.fullName || "Counselor Name"}
                     </p>
                   </div>
                 </td>
 
-                {/* 3. Counselor Signature Block: Blank Space for Pen Signature */}
                 <td className="border border-black p-4 w-1/3 align-top text-center h-[120px]">
                   <p className="font-bold text-[14px]">
                     Counselor Signature

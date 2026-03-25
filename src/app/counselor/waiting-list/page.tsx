@@ -11,6 +11,7 @@ import {
   Users,
   BarChart3,
   XCircle,
+  Loader2,
 } from "lucide-react";
 
 export default function CounselorDashboardPage() {
@@ -96,7 +97,6 @@ export default function CounselorDashboardPage() {
           </p>
         </div>
 
-        {/* METRICS GRID - Fully responsive stack on mobile */}
         {stats && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
@@ -166,7 +166,6 @@ export default function CounselorDashboardPage() {
             </span>
           </div>
           
-          {/* Scrollable Table Container */}
           <div className="overflow-x-auto w-full">
             <table className="w-full text-left border-collapse min-w-[700px]">
               <thead>
@@ -230,7 +229,12 @@ export default function CounselorDashboardPage() {
                         )}
                       </td>
                       <td className="p-4 text-right space-x-2 whitespace-nowrap">
-                        {record.status === "Needs_Review" ? (
+                        {record.status === "Pending_AI" ? (
+                           <button disabled className="inline-flex items-center px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-gray-50 text-gray-400 rounded-md text-xs sm:text-sm font-medium cursor-not-allowed border border-gray-100">
+                             <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 animate-spin" />
+                             Processing
+                           </button>
+                        ) : record.status === "Needs_Review" ? (
                           <>
                             <Link
                               href={`/counselor/record/${record._id}`}

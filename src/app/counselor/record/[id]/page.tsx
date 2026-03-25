@@ -3,7 +3,7 @@
 
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Bot, Save, FileText, Printer } from "lucide-react";
+import { ArrowLeft, Bot, Save, FileText, Printer, Loader2 } from "lucide-react";
 
 export default function CounselorRecordReview({
   params,
@@ -76,7 +76,7 @@ export default function CounselorRecordReview({
   if (isLoading)
     return (
       <div className="p-4 sm:p-8 text-center text-slate-500 print:hidden text-sm sm:text-base">
-        Generating Live Document...
+        Loading Document...
       </div>
     );
   if (!record)
@@ -85,6 +85,31 @@ export default function CounselorRecordReview({
         Record not found.
       </div>
     );
+
+  // PREVENT ACCESS IF AI IS STILL PROCESSING
+  if (record.status === "Pending_AI") {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-center space-y-4">
+          <div className="flex justify-center mb-4">
+            <div className="p-4 bg-yellow-50 rounded-full inline-block">
+              <Bot className="w-10 h-10 text-yellow-600 animate-pulse" />
+            </div>
+          </div>
+          <h2 className="text-xl font-bold text-slate-900">AI Analysis in Progress</h2>
+          <p className="text-slate-600 text-sm">
+            Our background systems are currently generating the diagnostic report for {record.student?.fullName || "this student"}. Please check back in a few minutes.
+          </p>
+          <button 
+            onClick={() => router.push('/counselor/waiting-list')}
+            className="mt-6 inline-flex items-center px-5 py-2.5 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" /> Return to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const ai = record.ai_analysis;
   const swot = record.swot_input || {
@@ -108,8 +133,7 @@ export default function CounselorRecordReview({
       `,
         }}
       />
-
-      {/* Reduced bottom padding for mobile tabs */}
+      {/* Rest of the rendering code remains identical... */}
       <div className="min-h-screen bg-slate-100 p-4 sm:p-6 md:p-8 pb-24 sm:pb-8 print:bg-white print:p-0">
         <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 print:space-y-0">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-200 print:hidden font-sans gap-3 sm:gap-4">
@@ -165,9 +189,6 @@ export default function CounselorRecordReview({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8 items-start print:block">
-            {/* Side panels now flow naturally in the document order for mobile users
-              so they can reference text/AI and scroll down to the actual document 
-            */}
             <div className="lg:col-span-4 space-y-4 sm:space-y-6 lg:sticky lg:top-24 print:hidden font-sans">
               <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200">
                 <h2 className="text-xs sm:text-sm font-bold text-slate-800 mb-2 sm:mb-3 flex items-center uppercase tracking-wider">
@@ -218,12 +239,10 @@ export default function CounselorRecordReview({
               </div>
             </div>
 
-            {/* Document wrapper needs full overflow control so tables don't break flex on tiny screens */}
             <div
               className="lg:col-span-8 bg-white border border-gray-300 shadow-xl p-4 sm:p-8 md:p-10 text-[11px] sm:text-[13px] leading-relaxed text-black w-full overflow-x-auto print:overflow-visible print:col-span-12 print:border-none print:shadow-none print:p-0 print:max-w-none"
               style={{ fontFamily: "Cambria, Georgia, serif" }}
             >
-              {/* Force minimum width on mobile so the official layout styling remains intact instead of squishing illegibly */}
               <div className="min-w-[600px] print:min-w-0">
                 <div className="text-center mb-4 sm:mb-6 text-black">
                   <h1 className="font-bold text-[13px] sm:text-[15px] uppercase">
