@@ -100,7 +100,7 @@ export default function StudentPrintReportPage() {
               DEVANG PATEL INSTITUTE OF ADVANCE TECHNOLOGY AND RESEARCH
               (DEPSTAR)
             </h2>
-            <h3 className="font-bold text-[14px] underline mt-4">
+            <h3 className="font-bold text-[14px] mt-4">
               Student Counseling – SWOT Analysis Form
             </h3>
           </div>
@@ -124,7 +124,7 @@ export default function StudentPrintReportPage() {
               <tr>
                 <td className="border border-black p-2 font-bold">Semester</td>
                 <td className="border border-black p-2">
-                  {record.student?.semester || ""}
+                  {record.student?.semester || "2"}
                 </td>
                 <td className="border border-black p-2 font-bold">
                   Department
@@ -135,7 +135,7 @@ export default function StudentPrintReportPage() {
               </tr>
               <tr>
                 <td className="border border-black p-2 font-bold">Date</td>
-                <td className="border border-black p-2">{docDate}</td>
+                <td className="border border-black p-2">19/03/2026</td>
                 <td className="border border-black p-2 font-bold">
                   Risk Level
                 </td>
@@ -148,7 +148,7 @@ export default function StudentPrintReportPage() {
             </tbody>
           </table>
 
-          <div className="text-center font-bold text-[14px] underline mb-2 text-black">
+          <div className="font-bold text-[14px] mb-2 text-black">
             SWOT Analysis
           </div>
           <table className="w-full border-collapse border border-black mb-6 table-fixed text-black">
@@ -210,7 +210,7 @@ export default function StudentPrintReportPage() {
 
           <div className="mb-8 space-y-4 text-black">
             <div>
-              <span className="font-bold">Counselor Findings: </span>
+              <span className="font-bold text-[14px]">Counselor Findings: </span>
               <br />
               <div className="mt-1 min-h-[40px] whitespace-pre-wrap">
                 {ai?.generated_report?.counselor_findings ||
@@ -218,7 +218,7 @@ export default function StudentPrintReportPage() {
               </div>
             </div>
             <div>
-              <span className="font-bold">Outcome / Action Plan: </span>
+              <span className="font-bold text-[14px]">Outcome / Action Plan: </span>
               <br />
               <div className="mt-1 min-h-[40px] whitespace-pre-wrap">
                 {review?.final_action_plan ||
@@ -227,7 +227,7 @@ export default function StudentPrintReportPage() {
             </div>
           </div>
 
-          <div className="font-bold text-[14px] mb-2 underline text-black">
+          <div className="font-bold text-[14px] mb-2 text-black">
             Counseling Meeting Record
           </div>
           <table className="w-full border-collapse border border-black mb-16 text-black">
@@ -246,13 +246,9 @@ export default function StudentPrintReportPage() {
             </thead>
             <tbody>
               <tr>
-                <td className="border border-black p-2 h-[40px]">{docDate}</td>
-                <td className="border border-black p-2">
-                  Routine SWOT Assessment & Growth Mapping
-                </td>
-                <td className="border border-black p-2">
-                  {review ? "Review Finalized" : "Pending Review"}
-                </td>
+                <td className="border border-black p-2 h-[40px]"></td>
+                <td className="border border-black p-2"></td>
+                <td className="border border-black p-2"></td>
               </tr>
             </tbody>
           </table>
@@ -263,7 +259,7 @@ export default function StudentPrintReportPage() {
               <tr>
                 {/* 1. Student Block: Name High, Space for Signature Below */}
                 <td className="border border-black p-4 w-1/3 align-top text-center h-[120px]">
-                  <p className="font-bold text-[14px]">Student's Signature</p>
+                  <p className="font-bold text-[14px]">Student Signature</p>
                 </td>
 
                 {/* 2. Counselor Name Block: Label top, Name at bottom */}
@@ -282,7 +278,7 @@ export default function StudentPrintReportPage() {
                 {/* 3. Counselor Signature Block: Blank Space for Pen Signature */}
                 <td className="border border-black p-4 w-1/3 align-top text-center h-[120px]">
                   <p className="font-bold text-[14px]">
-                    Signature of Counselor
+                    Counselor Signature
                   </p>
                 </td>
               </tr>

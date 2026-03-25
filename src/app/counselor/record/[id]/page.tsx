@@ -283,7 +283,6 @@ export default function CounselorRecordReview({
                             <option value="Low">Low</option>
                             <option value="Medium">Medium</option>
                             <option value="High">High</option>
-                            <option value="Critical">Critical</option>
                           </select>
                         ) : (
                           record.counselor_review?.final_risk_level || "Low / Medium / High"
