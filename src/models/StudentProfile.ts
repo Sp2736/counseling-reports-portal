@@ -27,6 +27,11 @@ const studentProfileSchema = new mongoose.Schema(
     // We will extract year and department from the studentId automatically later
     department: { type: String }, 
     admissionYear: { type: String },
+    semester: { 
+      type: Number,
+      min: [1, 'Semester cannot be less than 1'],
+      max: [8, 'Semester cannot be more than 8']
+    },
   },
   { timestamps: true }
 );

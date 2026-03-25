@@ -1,0 +1,22 @@
+name: AI Background Processor
+
+on:
+  schedule:
+    # Runs at minute 0 and 30 past every hour (e.g., 10:00, 10:30, 11:00...)
+    - cron: '0,30 * * * *'
+  # This line adds a button in GitHub so you can test it manually without waiting 30 mins
+  workflow_dispatch: 
+
+jobs:
+  trigger-ai:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Next.js API
+        env:
+          # Pulls the secret securely from GitHub settings
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        # Replace the URL below with your actual live Vercel domain!
+        run: |
+          curl -X GET "https://counseling-swot-analysis.vercel.app/api/cron/process-ai" \
+          -H "Authorization: Bearer $CRON_SECRET" \
+          --fail
