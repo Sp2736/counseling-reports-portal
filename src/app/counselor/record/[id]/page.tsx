@@ -273,7 +273,7 @@ export default function CounselorRecordReview({
                         Date
                       </td>
                       <td className="border border-black p-1.5 sm:p-2">
-                        {docDate}
+                        19/03/2026
                       </td>
                       <td className="border border-black p-1.5 sm:p-2 font-bold">
                         Risk Level
