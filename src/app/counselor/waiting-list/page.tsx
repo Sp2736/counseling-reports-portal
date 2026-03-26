@@ -12,12 +12,18 @@ import {
   BarChart3,
   XCircle,
   Loader2,
+  CheckSquare,
+  EyeOff,
+  Eye,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 
 export default function CounselorDashboardPage() {
   const [records, setRecords] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hideReviewed, setHideReviewed] = useState(true);
 
   // Modal State
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
@@ -25,7 +31,17 @@ export default function CounselorDashboardPage() {
   const [cancelReason, setCancelReason] = useState("");
   const [isCancelling, setIsCancelling] = useState(false);
 
+  // Batch Approve State
+  const [batchModalOpen, setBatchModalOpen] = useState(false);
+  const [isBatchApproving, setIsBatchApproving] = useState(false);
+  const [expandedRisk, setExpandedRisk] = useState<string | null>(null);
+
   useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
+    setIsLoading(true);
     Promise.all([
       fetch("/api/counselor/records").then((res) => res.json()),
       fetch("/api/counselor/stats").then((res) => res.json()),
@@ -40,7 +56,7 @@ export default function CounselorDashboardPage() {
         setRecords([]);
         setIsLoading(false);
       });
-  }, []);
+  };
 
   const openCancelModal = (id: string) => {
     setSelectedRecordId(id);
@@ -80,6 +96,40 @@ export default function CounselorDashboardPage() {
     }
   };
 
+  const handleBatchApprove = async () => {
+    setIsBatchApproving(true);
+    const recordsToApprove = records.filter(r => r.status === "Needs_Review").map(r => r._id);
+
+    try {
+      const res = await fetch("/api/counselor/records/bulk-approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recordIds: recordsToApprove }),
+      });
+
+      if (!res.ok) throw new Error("Failed to batch approve");
+
+      fetchData();
+      setBatchModalOpen(false);
+    } catch (error) {
+      alert("Error processing batch approval.");
+    } finally {
+      setIsBatchApproving(false);
+    }
+  };
+
+  const filteredRecords = hideReviewed 
+    ? records.filter(r => ["Needs_Review", "Pending_AI"].includes(r.status))
+    : records;
+
+  const needsReviewRecords = records.filter(r => r.status === "Needs_Review");
+  
+  const riskGroups = {
+    High: needsReviewRecords.filter(r => ["High", "Critical"].includes(r.ai_analysis?.risk_prediction?.risk_level)),
+    Medium: needsReviewRecords.filter(r => r.ai_analysis?.risk_prediction?.risk_level === "Medium"),
+    Low: needsReviewRecords.filter(r => r.ai_analysis?.risk_prediction?.risk_level === "Low")
+  };
+
   if (isLoading)
     return (
       <div className="p-4 sm:p-8 text-center text-gray-500">Loading Dashboard...</div>
@@ -88,13 +138,24 @@ export default function CounselorDashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8 pb-24 sm:pb-8">
       <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            Counselor Dashboard
-          </h1>
-          <p className="text-sm sm:text-base text-gray-600 mt-1">
-            Manage your assigned students and review SWOT reports.
-          </p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              Counselor Dashboard
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
+              Manage your assigned students and review SWOT reports.
+            </p>
+          </div>
+          {needsReviewRecords.length > 0 && (
+            <button
+              onClick={() => setBatchModalOpen(true)}
+              className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer"
+            >
+              <CheckSquare className="w-5 h-5 mr-2" />
+              Batch Approve All
+            </button>
+          )}
         </div>
 
         {stats && (
@@ -157,13 +218,21 @@ export default function CounselorDashboardPage() {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-800">
-              Needs Immediate Review
-            </h2>
-            <span className="bg-orange-100 text-orange-800 text-xs font-bold px-3 py-1 rounded-full">
-              {records.filter((r) => r.status === "Needs_Review").length}{" "}
-              Pending Action
-            </span>
+            <div className="flex items-center gap-3">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+                Action Queue
+              </h2>
+              <span className="bg-orange-100 text-orange-800 text-xs font-bold px-3 py-1 rounded-full">
+                {needsReviewRecords.length} Pending Action
+              </span>
+            </div>
+            <button
+              onClick={() => setHideReviewed(!hideReviewed)}
+              className="inline-flex cursor-pointer items-center px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+            >
+              {hideReviewed ? <Eye className="w-4 h-4 mr-2" /> : <EyeOff className="w-4 h-4 mr-2" />}
+              {hideReviewed ? "Show Reviewed" : "Hide Reviewed"}
+            </button>
           </div>
           
           <div className="overflow-x-auto w-full">
@@ -177,14 +246,14 @@ export default function CounselorDashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {records.length === 0 ? (
+                {filteredRecords.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="p-8 sm:p-12 text-center text-gray-500">
-                      No student records found.
+                      No matching records found.
                     </td>
                   </tr>
                 ) : (
-                  records.map((record) => (
+                  filteredRecords.map((record) => (
                     <tr
                       key={record._id}
                       className="hover:bg-gray-50 transition-colors"
@@ -311,6 +380,78 @@ export default function CounselorDashboardPage() {
                 }`}
               >
                 {isCancelling ? "Processing..." : "Confirm Reject"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Batch Approve Modal */}
+      {batchModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-xl max-w-lg w-full border border-slate-200 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Batch Approve Reports</h3>
+            <p className="text-sm text-slate-600 mb-6">
+              You are about to auto-fill and approve {needsReviewRecords.length} pending reports using AI-generated recommendations. Please review the risk distribution below.
+            </p>
+
+            <div className="space-y-3 mb-6">
+              {Object.entries(riskGroups).map(([level, items]) => (
+                <div key={level} className="border border-slate-200 rounded-xl overflow-hidden">
+                  <button
+                    onClick={() => setExpandedRisk(expandedRisk === level ? null : level)}
+                    className={`w-full flex items-center justify-between p-4 cursor-pointer ${
+                      level === 'High' ? 'bg-red-50 hover:bg-red-100' :
+                      level === 'Medium' ? 'bg-yellow-50 hover:bg-yellow-100' :
+                      'bg-emerald-50 hover:bg-emerald-100'
+                    } transition-colors`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className={`font-bold ${
+                        level === 'High' ? 'text-red-700' :
+                        level === 'Medium' ? 'text-yellow-700' :
+                        'text-emerald-700'
+                      }`}>
+                        {level} Risk
+                      </span>
+                      <span className="text-xs font-semibold px-2 py-1 bg-white rounded-full bg-opacity-50">
+                        {items.length} students
+                      </span>
+                    </div>
+                    {expandedRisk === level ? <ChevronUp className="w-5 h-5 text-gray-500" /> : <ChevronDown className="w-5 h-5 text-gray-500" />}
+                  </button>
+                  
+                  {expandedRisk === level && items.length > 0 && (
+                    <div className="p-4 bg-white border-t border-slate-100 max-h-40 overflow-y-auto">
+                      <ul className="space-y-2">
+                        {items.map((r: any) => (
+                          <li key={r._id} className="text-sm flex justify-between">
+                            <span className="font-medium text-slate-800">{r.student?.fullName}</span>
+                            <span className="text-slate-500 font-mono">{r.student?.studentId}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setBatchModalOpen(false)}
+                className="px-4 py-2 cursor-pointer text-slate-600 font-medium hover:bg-slate-100 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleBatchApprove}
+                disabled={isBatchApproving}
+                className={`px-5 py-2 cursor-pointer font-bold rounded-xl text-white transition-colors shadow-sm ${
+                  isBatchApproving ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
+                }`}
+              >
+                {isBatchApproving ? "Processing..." : `Approve All (${needsReviewRecords.length})`}
               </button>
             </div>
           </div>
