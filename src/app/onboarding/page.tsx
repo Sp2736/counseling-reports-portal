@@ -132,7 +132,7 @@ export default function OnboardingPage() {
                   onChange={(e) => setStudentData({ ...studentData, studentId: e.target.value.toUpperCase() })}
                 />
                 <p className="text-[10px] sm:text-[11px] text-slate-400 mt-1.5 flex items-center">
-                  <ShieldCheck className="w-3 h-3 mr-1 shrink-0" /> Format: DEMO-CS-1088
+                  <ShieldCheck className="w-3 h-3 mr-1 shrink-0" /> Format: STU-2026-1088
                 </p>
               </div>
 

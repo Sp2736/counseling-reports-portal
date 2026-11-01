@@ -52,7 +52,7 @@ interface DemoContextType {
 
 const DemoContext = createContext<DemoContextType | undefined>(undefined);
 
-const STORAGE_KEY = "counseling_demo_session_v2";
+const STORAGE_KEY = "counseling_demo_session_v6";
 
 export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [role, setRoleState] = useState<"student" | "counselor">("student");
@@ -69,12 +69,42 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
   // - Restarts fresh when user quits the app/browser tab and reopens
   useEffect(() => {
     try {
-      // Clear legacy localStorage if any
       if (typeof window !== "undefined") {
-        localStorage.removeItem("counseling_demo_state_v1");
-        
+        // Clear all legacy storage keys
+        const legacyKeys = [
+          "counseling_demo_state_v1",
+          "counseling_demo_state_v2",
+          "counseling_demo_session_v1",
+          "counseling_demo_session_v2",
+          "counseling_demo_session_v3",
+          "counseling_demo_session_v4",
+          "counseling_demo_session_v5",
+        ];
+        legacyKeys.forEach((key) => {
+          localStorage.removeItem(key);
+          sessionStorage.removeItem(key);
+        });
+
+        // Scan all sessionStorage keys and clear any that contain outdated formats
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const key = sessionStorage.key(i);
+          if (key && key.startsWith("counseling_demo")) {
+            const val = sessionStorage.getItem(key) || "";
+            if (/24D|23D|DCS|DCE|DIT|CHARUSAT|DEPSTAR|DEMO-CS|DEMO-CE|DEMO-IT/i.test(val)) {
+              sessionStorage.removeItem(key);
+            }
+          }
+        }
+
         const saved = sessionStorage.getItem(STORAGE_KEY);
         if (saved) {
+          // If the cached session contains any old format, purge immediately
+          if (/24D|23D|DCS|DCE|DIT|CHARUSAT|DEPSTAR|DEMO-CS|DEMO-CE|DEMO-IT/i.test(saved)) {
+            sessionStorage.removeItem(STORAGE_KEY);
+            setIsWelcomeModalOpen(true);
+            return;
+          }
+
           const parsed = JSON.parse(saved);
           if (parsed.role) setRoleState(parsed.role);
           if (parsed.studentProfile) setStudentProfile(parsed.studentProfile);

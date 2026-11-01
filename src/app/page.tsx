@@ -279,12 +279,12 @@ export default function HomePage() {
                   required
                   value={formData.studentId}
                   onChange={(e) => setFormData({ ...formData, studentId: e.target.value.toUpperCase() })}
-                  placeholder="e.g., DEMO-CS-1088"
+                  placeholder="e.g., STU-2026-1088"
                   className="w-full p-3.5 border border-slate-300 rounded-xl bg-slate-50 text-slate-900 font-mono font-bold tracking-wider placeholder-slate-400 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm sm:text-base"
                 />
                 <p className="text-[11px] text-slate-400 mt-1.5 flex items-center">
                   <ShieldCheck className="w-3.5 h-3.5 text-indigo-600 mr-1 shrink-0" />
-                  Format: DEMO-CS-1088 (Program: Demo, Dept: CS, Roll: 1088)
+                  Format: STU-2026-1088 (Universal Student ID)
                 </p>
               </div>
 
@@ -298,9 +298,9 @@ export default function HomePage() {
                   onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                   className="w-full p-3.5 border border-slate-300 rounded-xl bg-slate-50 text-slate-900 font-medium focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm sm:text-base cursor-pointer"
                 >
-                  <option value="CS - Computer Science & Engineering">CS - Computer Science & Engineering</option>
-                  <option value="CE - Computer Engineering">CE - Computer Engineering</option>
-                  <option value="IT - Information Technology">IT - Information Technology</option>
+                  <option value="Computer Science & Engineering">Computer Science & Engineering</option>
+                  <option value="Software Engineering">Software Engineering</option>
+                  <option value="Information Systems">Information Systems</option>
                 </select>
               </div>
 

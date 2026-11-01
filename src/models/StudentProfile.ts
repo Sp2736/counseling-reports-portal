@@ -17,7 +17,7 @@ const studentProfileSchema = new mongoose.Schema(
       required: true,
       unique: true,
       uppercase: true,
-      match: [/^\d{2}[A-Za-z]{3}\d{3}$/, 'Student ID must be in the format XXCCCXXX (e.g., 23DCS102)'],
+      match: [/^[A-Za-z0-9-]+$/, 'Student ID must be in valid format (e.g., STU-2026-1088)'],
     },
     assignedCounselor: {
       type: mongoose.Schema.Types.ObjectId,

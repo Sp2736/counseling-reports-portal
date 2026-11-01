@@ -257,7 +257,7 @@ function RecordReviewContent() {
                     <tr>
                       <td className="border border-black p-1.5 sm:p-2 font-bold w-[20%]">Student ID</td>
                       <td className="border border-black p-1.5 sm:p-2 w-[30%]">
-                        {record.student?.studentId || "DEMO-CS-1088"}
+                        {record.student?.studentId || "STU-2026-1088"}
                       </td>
                       <td className="border border-black p-1.5 sm:p-2 font-bold w-[20%]">Student Name</td>
                       <td className="border border-black p-1.5 sm:p-2 w-[30%]">

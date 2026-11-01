@@ -65,8 +65,8 @@ export interface CounselingRecord {
 export const DUMMY_STUDENT: StudentProfile = {
   _id: "stud-live",
   fullName: "Arjun Mehta",
-  studentId: "DEMO-CS-1088",
-  department: "CS - Computer Science & Engineering",
+  studentId: "STU-2026-1088",
+  department: "Computer Science & Engineering",
   semester: "4",
   email: "arjun.mehta@demo-univ.edu",
   assignedCounselor: "counselor-1",
@@ -77,22 +77,22 @@ export const DUMMY_COUNSELORS: CounselorProfile[] = [
   {
     _id: "counselor-1",
     fullName: "Dr. Priya Sharma",
-    employeeId: "FAC-DEMO-042",
-    department: "CS - Computer Science",
+    employeeId: "FAC-2026-042",
+    department: "Computer Science & Engineering",
     expertise: "Academic Stress, Career Transition, CS/IT Students",
   },
   {
     _id: "counselor-2",
     fullName: "Prof. Rajesh Verma",
-    employeeId: "FAC-DEMO-088",
-    department: "CE - Computer Engineering",
+    employeeId: "FAC-2026-088",
+    department: "Software Engineering",
     expertise: "Exam Preparation, Time Management, Aptitude Training",
   },
   {
     _id: "counselor-3",
     fullName: "Dr. Ananya Iyer",
-    employeeId: "FAC-DEMO-115",
-    department: "IT - Information Technology",
+    employeeId: "FAC-2026-115",
+    department: "Information Systems",
     expertise: "Personal Well-being, Technical Focus & Research Guidance",
   },
 ];
@@ -114,8 +114,8 @@ export const INITIAL_PIPELINE_RECORDS: CounselingRecord[] = [
     student: {
       _id: "stud-1",
       fullName: "Kavya Patel",
-      studentId: "DEMO-CS-1042",
-      department: "CS",
+      studentId: "STU-2026-1042",
+      department: "Computer Science & Engineering",
       semester: "4",
     },
     assignedCounselor: {
@@ -158,8 +158,8 @@ export const INITIAL_PIPELINE_RECORDS: CounselingRecord[] = [
     student: {
       _id: "stud-2",
       fullName: "Rohan Shah",
-      studentId: "DEMO-CE-1015",
-      department: "CE",
+      studentId: "STU-2026-1015",
+      department: "Software Engineering",
       semester: "4",
     },
     assignedCounselor: {
@@ -201,8 +201,8 @@ export const INITIAL_PIPELINE_RECORDS: CounselingRecord[] = [
     student: {
       _id: "stud-3",
       fullName: "Meera Joshi",
-      studentId: "DEMO-IT-1078",
-      department: "IT",
+      studentId: "STU-2026-1078",
+      department: "Information Systems",
       semester: "4",
     },
     assignedCounselor: {
@@ -226,8 +226,8 @@ export const INITIAL_PIPELINE_RECORDS: CounselingRecord[] = [
     student: {
       _id: "stud-4",
       fullName: "Devendra Rao",
-      studentId: "DEMO-CS-1003",
-      department: "CS",
+      studentId: "STU-2026-1003",
+      department: "Computer Science & Engineering",
       semester: "4",
     },
     assignedCounselor: {
@@ -254,8 +254,8 @@ export const INITIAL_STUDENTS_ROSTER = [
   {
     _id: "stud-live",
     fullName: "Arjun Mehta",
-    studentId: "DEMO-CS-1088",
-    department: "CS",
+    studentId: "STU-2026-1088",
+    department: "Computer Science & Engineering",
     email: "arjun.mehta@demo-univ.edu",
     pendingCount: 0,
     latestRiskLevel: "N/A",
@@ -263,8 +263,8 @@ export const INITIAL_STUDENTS_ROSTER = [
   {
     _id: "stud-1",
     fullName: "Kavya Patel",
-    studentId: "DEMO-CS-1042",
-    department: "CS",
+    studentId: "STU-2026-1042",
+    department: "Computer Science & Engineering",
     email: "kavya.patel@demo-univ.edu",
     pendingCount: 0,
     latestRiskLevel: "Low",
@@ -272,8 +272,8 @@ export const INITIAL_STUDENTS_ROSTER = [
   {
     _id: "stud-2",
     fullName: "Rohan Shah",
-    studentId: "DEMO-CE-1015",
-    department: "CE",
+    studentId: "STU-2026-1015",
+    department: "Software Engineering",
     email: "rohan.shah@demo-univ.edu",
     pendingCount: 1,
     latestRiskLevel: "High",
@@ -281,8 +281,8 @@ export const INITIAL_STUDENTS_ROSTER = [
   {
     _id: "stud-3",
     fullName: "Meera Joshi",
-    studentId: "DEMO-IT-1078",
-    department: "IT",
+    studentId: "STU-2026-1078",
+    department: "Information Systems",
     email: "meera.joshi@demo-univ.edu",
     pendingCount: 1,
     latestRiskLevel: "N/A",
@@ -290,8 +290,8 @@ export const INITIAL_STUDENTS_ROSTER = [
   {
     _id: "stud-4",
     fullName: "Devendra Rao",
-    studentId: "DEMO-CS-1003",
-    department: "CS",
+    studentId: "STU-2026-1003",
+    department: "Computer Science & Engineering",
     email: "devendra.rao@demo-univ.edu",
     pendingCount: 0,
     latestRiskLevel: "N/A",
