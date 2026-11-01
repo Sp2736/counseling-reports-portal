@@ -16,7 +16,10 @@ export default function CounselorNavbar() {
   ];
 
   return (
-    <nav className="bg-slate-900 border-b border-slate-800 shadow-md sticky top-0 z-40">
+    <nav
+      data-role="navigation"
+      className="bg-slate-900 border-b border-slate-800 print-hidden print:hidden shadow-md sticky top-0 z-40"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo & Portal title */}
@@ -30,7 +33,7 @@ export default function CounselorNavbar() {
                   Counselor Command
                 </span>
                 <span className="text-[10px] font-semibold text-indigo-400 uppercase tracking-wider block">
-                  Faculty Center · CHARUSAT
+                  Faculty Center · Demo University
                 </span>
               </div>
             </Link>
@@ -80,7 +83,7 @@ export default function CounselorNavbar() {
       </div>
 
       {/* Mobile Bottom Bar */}
-      <div className="md:hidden border-t border-slate-800 bg-slate-900 flex justify-around p-2">
+      <div className="md:hidden border-t border-slate-800 bg-slate-900 flex justify-around p-2 print-hidden print:hidden">
         {links.map((link) => {
           const Icon = link.icon;
           const isActive = pathname.startsWith(link.href);

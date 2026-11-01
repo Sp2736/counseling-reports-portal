@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, UploadCloud, User, University, ArrowLeftRight, Sparkles } from "lucide-react";
+import { Home, UploadCloud, User, University, ArrowLeftRight } from "lucide-react";
 import { useDemo } from "@/src/lib/demo-context";
 
 export default function StudentNavbar() {
@@ -16,7 +16,10 @@ export default function StudentNavbar() {
   ];
 
   return (
-    <nav className="bg-white border-b border-gray-200 print:hidden shadow-sm sticky top-0 z-40">
+    <nav
+      data-role="navigation"
+      className="bg-white border-b border-gray-200 print-hidden print:hidden shadow-sm sticky top-0 z-40"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo & Portal title */}
@@ -30,7 +33,7 @@ export default function StudentNavbar() {
                   Student Portal
                 </span>
                 <span className="text-[10px] font-semibold text-indigo-600 uppercase tracking-wider block">
-                  CHARUSAT · DEPSTAR
+                  DEMO UNIVERSITY MATRIX
                 </span>
               </div>
             </Link>
@@ -80,7 +83,7 @@ export default function StudentNavbar() {
       </div>
 
       {/* Mobile Bottom Bar */}
-      <div className="md:hidden border-t border-gray-200 bg-gray-50 flex justify-around p-2">
+      <div className="md:hidden border-t border-gray-200 bg-gray-50 flex justify-around p-2 print-hidden print:hidden">
         {links.map((link) => {
           const Icon = link.icon;
           const isActive = pathname.startsWith(link.href);

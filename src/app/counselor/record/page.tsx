@@ -61,7 +61,7 @@ function RecordReviewContent() {
 
   if (isLoading) {
     return (
-      <div className="p-8 text-center text-slate-500 print:hidden text-sm sm:text-base font-medium">
+      <div className="p-8 text-center text-slate-500 print:hidden font-medium">
         Loading Document...
       </div>
     );
@@ -69,7 +69,7 @@ function RecordReviewContent() {
 
   if (!record) {
     return (
-      <div className="p-8 text-center text-red-500 print:hidden text-sm sm:text-base font-medium">
+      <div className="p-8 text-center text-red-500 print:hidden font-medium">
         Record not found.
       </div>
     );
@@ -116,7 +116,14 @@ function RecordReviewContent() {
           __html: `
         @media print {
           @page { size: A4; margin: 15mm; }
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: white !important; }
+          nav, header, footer, aside, [data-role="navigation"], .print\\:hidden, .print-hidden {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: white !important; margin: 0 !important; padding: 0 !important; }
         }
       `,
         }}
@@ -125,7 +132,7 @@ function RecordReviewContent() {
       <div className="min-h-screen bg-slate-100 p-4 sm:p-6 md:p-8 pb-24 sm:pb-8 print:bg-white print:p-0">
         <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 print:space-y-0">
           {/* Top Bar */}
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200 print:hidden font-sans gap-3 sm:gap-4">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200 print:hidden print-hidden font-sans gap-3 sm:gap-4">
             <div className="flex items-center space-x-3 sm:space-x-4 w-full md:w-auto">
               <button
                 onClick={() => router.push("/counselor/waiting-list")}
@@ -176,7 +183,7 @@ function RecordReviewContent() {
           {/* 2-Column Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8 items-start print:block">
             {/* Left Column: Raw text & AI diagnostic summary */}
-            <div className="lg:col-span-4 space-y-4 sm:space-y-6 lg:sticky lg:top-24 print:hidden font-sans">
+            <div className="lg:col-span-4 space-y-4 sm:space-y-6 lg:sticky lg:top-24 print:hidden print-hidden font-sans">
               <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
                 <h2 className="text-xs sm:text-sm font-bold text-slate-800 mb-2 sm:mb-3 flex items-center uppercase tracking-wider">
                   <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 text-slate-500" />
@@ -235,10 +242,10 @@ function RecordReviewContent() {
               <div className="min-w-[600px] print:min-w-0">
                 <div className="text-center mb-4 sm:mb-6 text-black">
                   <h1 className="font-bold text-[13px] sm:text-[15px] uppercase">
-                    CHAROTAR UNIVERSITY OF SCIENCE AND TECHNOLOGY (CHARUSAT)
+                    NATIONAL APEX UNIVERSITY OF TECHNOLOGY (NAUT)
                   </h1>
                   <h2 className="font-bold text-[12px] sm:text-[14px] uppercase mt-1">
-                    DEVANG PATEL INSTITUTE OF ADVANCE TECHNOLOGY AND RESEARCH (DEPSTAR)
+                    INSTITUTE OF ADVANCED COMPUTING & RESEARCH (IACR)
                   </h2>
                   <h3 className="font-bold text-[12px] sm:text-[14px] mt-3 sm:mt-4">
                     Student Counseling – SWOT Analysis Form
@@ -250,7 +257,7 @@ function RecordReviewContent() {
                     <tr>
                       <td className="border border-black p-1.5 sm:p-2 font-bold w-[20%]">Student ID</td>
                       <td className="border border-black p-1.5 sm:p-2 w-[30%]">
-                        {record.student?.studentId || "24DCS088"}
+                        {record.student?.studentId || "DEMO-CS-1088"}
                       </td>
                       <td className="border border-black p-1.5 sm:p-2 font-bold w-[20%]">Student Name</td>
                       <td className="border border-black p-1.5 sm:p-2 w-[30%]">
@@ -264,7 +271,7 @@ function RecordReviewContent() {
                       </td>
                       <td className="border border-black p-1.5 sm:p-2 font-bold">Department</td>
                       <td className="border border-black p-1.5 sm:p-2">
-                        {record.student?.department || "DCS"}
+                        {record.student?.department || "CS"}
                       </td>
                     </tr>
                     <tr>
@@ -445,4 +452,3 @@ export default function CounselorRecordPage() {
     </Suspense>
   );
 }
-

@@ -91,7 +91,7 @@ export default function OnboardingPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 sm:mb-2">Employee ID</label>
+                <label className="block text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 sm:mb-2">Faculty ID</label>
                 <input
                   type="text"
                   required
@@ -123,7 +123,7 @@ export default function OnboardingPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 sm:mb-2">College ID</label>
+                <label className="block text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 sm:mb-2">Student ID</label>
                 <input
                   type="text"
                   required
@@ -132,7 +132,7 @@ export default function OnboardingPage() {
                   onChange={(e) => setStudentData({ ...studentData, studentId: e.target.value.toUpperCase() })}
                 />
                 <p className="text-[10px] sm:text-[11px] text-slate-400 mt-1.5 flex items-center">
-                  <ShieldCheck className="w-3 h-3 mr-1 shrink-0" /> Department is automatically extracted from your ID.
+                  <ShieldCheck className="w-3 h-3 mr-1 shrink-0" /> Format: DEMO-CS-1088
                 </p>
               </div>
 

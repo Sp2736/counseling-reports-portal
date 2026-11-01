@@ -107,7 +107,7 @@ export default function CounselorProfilePage() {
 
               <div>
                 <label className="block text-xs sm:text-sm font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                  Employee ID (Permanent)
+                  Faculty ID (Permanent)
                 </label>
                 <input
                   type="text"

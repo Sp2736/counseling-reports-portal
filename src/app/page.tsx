@@ -15,7 +15,6 @@ import {
   ChevronRight,
   RotateCcw,
   CheckCircle2,
-  FileText,
   Bot
 } from "lucide-react";
 import { DUMMY_STUDENT } from "@/src/lib/demo-data";
@@ -27,7 +26,6 @@ export default function HomePage() {
     setStudentProfile,
     counselors,
     setRole,
-    requestRoleSwitch,
   } = useDemo();
 
   const [formData, setFormData] = useState({
@@ -38,7 +36,6 @@ export default function HomePage() {
   });
 
   const [isDemoFilled, setIsDemoFilled] = useState(true);
-  const [successToast, setSuccessToast] = useState(false);
 
   const handleFillDemoData = () => {
     setFormData({
@@ -54,7 +51,7 @@ export default function HomePage() {
     setFormData({
       fullName: "",
       studentId: "",
-      department: "DCS - Computer Science & Engineering",
+      department: "CS - Computer Science & Engineering",
       assignedCounselor: counselors[0]?._id || "",
     });
     setIsDemoFilled(false);
@@ -81,11 +78,10 @@ export default function HomePage() {
     }));
 
     setRole("student");
-    setSuccessToast(true);
 
     setTimeout(() => {
       router.push("/student/dashboard");
-    }, 400);
+    }, 300);
   };
 
   const handleDirectCounselor = () => {
@@ -96,7 +92,10 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-20">
       {/* Top University Branding Bar */}
-      <header className="bg-slate-900 border-b border-slate-800 text-white py-4 px-4 sm:px-8 sticky top-0 z-30 shadow-md">
+      <header
+        data-role="navigation"
+        className="bg-slate-900 border-b border-slate-800 text-white py-4 px-4 sm:px-8 sticky top-0 z-30 shadow-md print-hidden print:hidden"
+      >
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center space-x-3">
             <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center font-bold text-white shadow-sm">
@@ -104,10 +103,10 @@ export default function HomePage() {
             </div>
             <div>
               <h1 className="text-sm sm:text-base font-black tracking-tight leading-tight">
-                CHAROTAR UNIVERSITY OF SCIENCE AND TECHNOLOGY (CHARUSAT)
+                NATIONAL APEX UNIVERSITY OF TECHNOLOGY (NAUT)
               </h1>
               <p className="text-[11px] text-slate-400 font-medium">
-                DEVANG PATEL INSTITUTE OF ADVANCE TECHNOLOGY AND RESEARCH (DEPSTAR)
+                INSTITUTE OF ADVANCED COMPUTING & RESEARCH (IACR)
               </p>
             </div>
           </div>
@@ -273,19 +272,19 @@ export default function HomePage() {
               {/* College ID */}
               <div>
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-                  College ID
+                  Student ID
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.studentId}
                   onChange={(e) => setFormData({ ...formData, studentId: e.target.value.toUpperCase() })}
-                  placeholder="e.g., 24DCS088"
+                  placeholder="e.g., DEMO-CS-1088"
                   className="w-full p-3.5 border border-slate-300 rounded-xl bg-slate-50 text-slate-900 font-mono font-bold tracking-wider placeholder-slate-400 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm sm:text-base"
                 />
                 <p className="text-[11px] text-slate-400 mt-1.5 flex items-center">
                   <ShieldCheck className="w-3.5 h-3.5 text-indigo-600 mr-1 shrink-0" />
-                  Format: 24DCS088 (Batch: 2024, Dept: DCS, Roll: 088)
+                  Format: DEMO-CS-1088 (Program: Demo, Dept: CS, Roll: 1088)
                 </p>
               </div>
 
@@ -299,9 +298,9 @@ export default function HomePage() {
                   onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                   className="w-full p-3.5 border border-slate-300 rounded-xl bg-slate-50 text-slate-900 font-medium focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm sm:text-base cursor-pointer"
                 >
-                  <option value="DCS - Computer Science & Engineering">DCS - Computer Science & Engineering</option>
-                  <option value="DCE - Computer Engineering">DCE - Computer Engineering</option>
-                  <option value="DIT - Information Technology">DIT - Information Technology</option>
+                  <option value="CS - Computer Science & Engineering">CS - Computer Science & Engineering</option>
+                  <option value="CE - Computer Engineering">CE - Computer Engineering</option>
+                  <option value="IT - Information Technology">IT - Information Technology</option>
                 </select>
               </div>
 

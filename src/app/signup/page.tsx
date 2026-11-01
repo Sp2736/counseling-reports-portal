@@ -73,7 +73,7 @@ export default function SignupPage() {
               </label>
               <input
                 type="email"
-                defaultValue={roleChoice === "student" ? "arjun.mehta24@charusat.edu.in" : "priya.sharma@charusat.edu.in"}
+                defaultValue={roleChoice === "student" ? "arjun.mehta@demo-univ.edu" : "priya.sharma@demo-univ.edu"}
                 className="w-full p-3.5 border border-slate-200 rounded-xl text-slate-900 bg-slate-50 text-sm"
               />
             </div>

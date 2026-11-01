@@ -12,7 +12,6 @@ export default function DemoWelcomeModal() {
   useEffect(() => {
     if (isWelcomeModalOpen) {
       setMounted(true);
-      // Small tick for smooth fade-in
       const timer = setTimeout(() => setVisible(true), 50);
       return () => clearTimeout(timer);
     } else {
@@ -39,7 +38,6 @@ export default function DemoWelcomeModal() {
       >
         {/* Header gradient banner */}
         <div className="relative bg-gradient-to-br from-indigo-900 via-indigo-800 to-slate-900 p-6 sm:p-8 text-white text-center overflow-hidden">
-          {/* Subtle background glow */}
           <div className="absolute -top-12 -right-12 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
 
@@ -64,7 +62,7 @@ export default function DemoWelcomeModal() {
             Welcome to the Demo
           </h2>
           <p className="text-indigo-200 text-sm mt-2 font-medium">
-            CHARUSAT · DEPSTAR AI Counseling Platform
+            Demo University AI Counseling Platform
           </p>
         </div>
 
@@ -109,4 +107,3 @@ export default function DemoWelcomeModal() {
     </div>
   );
 }
-

@@ -3,8 +3,8 @@ import "./globals.css";
 import AuthProvider from "./components/AuthProvider";
 
 export const metadata: Metadata = {
-  title: "CHARUSAT · DEPSTAR AI Counseling Platform (Demo)",
-  description: "Advanced SWOT analysis and student support system.",
+  title: "University AI Student Counseling & SWOT Matrix (Demo)",
+  description: "Advanced SWOT analysis and proactive student support system.",
 };
 
 export default function RootLayout({

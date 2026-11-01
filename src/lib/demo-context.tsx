@@ -52,7 +52,7 @@ interface DemoContextType {
 
 const DemoContext = createContext<DemoContextType | undefined>(undefined);
 
-const STORAGE_KEY = "counseling_demo_state_v1";
+const STORAGE_KEY = "counseling_demo_session_v2";
 
 export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [role, setRoleState] = useState<"student" | "counselor">("student");
@@ -64,20 +64,27 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [isRoleSwitchModalOpen, setIsRoleSwitchModalOpen] = useState(false);
   const [targetRoleToSwitch, setTargetRoleToSwitch] = useState<"student" | "counselor" | null>(null);
 
-  // Initialize from localStorage or show first-time welcome
+  // Initialize from sessionStorage:
+  // - Preserves session across page refreshes (F5 / reload) within the same tab
+  // - Restarts fresh when user quits the app/browser tab and reopens
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.role) setRoleState(parsed.role);
-        if (parsed.studentProfile) setStudentProfile(parsed.studentProfile);
-        if (parsed.counselorProfile) setCounselorProfile(parsed.counselorProfile);
-        if (parsed.records) setRecords(parsed.records);
-        if (parsed.studentsRoster) setStudentsRoster(parsed.studentsRoster);
-      } else {
-        // First time landing: trigger the custom welcome modal
-        setIsWelcomeModalOpen(true);
+      // Clear legacy localStorage if any
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("counseling_demo_state_v1");
+        
+        const saved = sessionStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.role) setRoleState(parsed.role);
+          if (parsed.studentProfile) setStudentProfile(parsed.studentProfile);
+          if (parsed.counselorProfile) setCounselorProfile(parsed.counselorProfile);
+          if (parsed.records) setRecords(parsed.records);
+          if (parsed.studentsRoster) setStudentsRoster(parsed.studentsRoster);
+        } else {
+          // Brand new visit: trigger the entrance welcome popup
+          setIsWelcomeModalOpen(true);
+        }
       }
     } catch (e) {
       console.warn("Could not parse saved demo session", e);
@@ -85,19 +92,21 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Sync to localStorage
+  // Sync to sessionStorage
   useEffect(() => {
     try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({
-          role,
-          studentProfile,
-          counselorProfile,
-          records,
-          studentsRoster,
-        })
-      );
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            role,
+            studentProfile,
+            counselorProfile,
+            records,
+            studentsRoster,
+          })
+        );
+      }
     } catch (e) {
       console.warn("Could not save demo session", e);
     }
@@ -153,7 +162,6 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
 
     const original_submitted_text = `Semester: ${formData.semester}\n\n[STRENGTHS]\n${formData.strengths}\n\n[WEAKNESSES]\n${formData.weaknesses}\n\n[OPPORTUNITIES]\n${formData.opportunities}\n\n[THREATS]\n${formData.threats}`;
 
-    // Generate high-fidelity simulated AI diagnostic (modelled after Gemini 2.5)
     const simulatedAi = {
       risk_prediction: {
         risk_level: "Medium" as const,
@@ -178,7 +186,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       _id: newRecordId,
       report_period: 2,
       createdAt: new Date().toISOString(),
-      status: "Needs_Review", // Ready in the counselor's queue
+      status: "Needs_Review",
       student: {
         _id: studentProfile._id,
         fullName: studentProfile.fullName,
@@ -197,7 +205,6 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
 
     setRecords((prev) => [newRecord, ...prev]);
 
-    // Update roster to show pending action for this student
     setStudentsRoster((prev) =>
       prev.map((s) =>
         s._id === studentProfile._id || s.studentId === studentProfile.studentId
@@ -227,7 +234,6 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       })
     );
 
-    // Update roster status
     const target = records.find((r) => r._id === recordId);
     if (target) {
       setStudentsRoster((prev) =>
@@ -308,7 +314,6 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       })
     );
 
-    // Clear all pending counts in roster
     setStudentsRoster((prev) =>
       prev.map((s) => ({
         ...s,
@@ -324,7 +329,9 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     setCounselorProfile(DUMMY_COUNSELORS[0]);
     setRecords(INITIAL_PIPELINE_RECORDS);
     setStudentsRoster(INITIAL_STUDENTS_ROSTER);
-    localStorage.removeItem(STORAGE_KEY);
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem(STORAGE_KEY);
+    }
   };
 
   const getRecordById = (id: string) => {
@@ -386,4 +393,3 @@ export function useDemo() {
   }
   return context;
 }
-

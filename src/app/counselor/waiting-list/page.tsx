@@ -112,7 +112,7 @@ export default function CounselorDashboardPage() {
         </div>
 
         {/* Live Pipeline banner if student just submitted */}
-        {needsReviewRecords.some((r) => r.student?.studentId === "24DCS088") && (
+        {needsReviewRecords.some((r) => r.student?.studentId === "DEMO-CS-1088") && (
           <div className="p-4 bg-indigo-50 border border-indigo-200 rounded-2xl flex items-center justify-between">
             <div className="flex items-center space-x-3 text-indigo-900 text-sm">
               <Sparkles className="w-5 h-5 text-indigo-600 shrink-0" />

@@ -78,14 +78,21 @@ function PrintReportContent() {
           __html: `
         @media print {
           @page { size: A4; margin: 15mm; }
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          nav, header, footer, aside, [data-role="navigation"], .print\\:hidden, .print-hidden {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: white !important; margin: 0 !important; padding: 0 !important; }
         }
       `,
         }}
       />
 
       <div className="min-h-screen bg-slate-100 p-4 md:p-8 print:bg-white print:p-0">
-        <div className="max-w-[800px] mx-auto mb-6 flex justify-between items-center print:hidden bg-white p-4 rounded-xl shadow-sm border border-slate-200 font-sans">
+        <div className="max-w-[800px] mx-auto mb-6 flex justify-between items-center print:hidden print-hidden bg-white p-4 rounded-xl shadow-sm border border-slate-200 font-sans">
           <button
             onClick={() => router.push("/student/dashboard")}
             className="flex items-center text-slate-600 hover:text-slate-900 transition font-medium cursor-pointer"
@@ -111,10 +118,10 @@ function PrintReportContent() {
         >
           <div className="text-center mb-6 text-black">
             <h1 className="font-bold text-[15px] uppercase">
-              CHAROTAR UNIVERSITY OF SCIENCE AND TECHNOLOGY (CHARUSAT)
+              NATIONAL APEX UNIVERSITY OF TECHNOLOGY (NAUT)
             </h1>
             <h2 className="font-bold text-[14px] uppercase mt-1">
-              DEVANG PATEL INSTITUTE OF ADVANCE TECHNOLOGY AND RESEARCH (DEPSTAR)
+              INSTITUTE OF ADVANCED COMPUTING & RESEARCH (IACR)
             </h2>
             <h3 className="font-bold text-[14px] mt-4">
               Student Counseling – SWOT Analysis Form
@@ -126,7 +133,7 @@ function PrintReportContent() {
               <tr>
                 <td className="border border-black p-2 font-bold w-[20%]">Student ID</td>
                 <td className="border border-black p-2 w-[30%]">
-                  {record.student?.studentId || "24DCS088"}
+                  {record.student?.studentId || "DEMO-CS-1088"}
                 </td>
                 <td className="border border-black p-2 font-bold w-[20%]">Student Name</td>
                 <td className="border border-black p-2 w-[30%]">
@@ -138,7 +145,7 @@ function PrintReportContent() {
                 <td className="border border-black p-2">{record.student?.semester || "4"}</td>
                 <td className="border border-black p-2 font-bold">Department</td>
                 <td className="border border-black p-2">
-                  {record.student?.department || "DCS"}
+                  {record.student?.department || "CS"}
                 </td>
               </tr>
               <tr>
@@ -292,4 +299,3 @@ export default function StudentPrintReportPage() {
     </Suspense>
   );
 }
-
