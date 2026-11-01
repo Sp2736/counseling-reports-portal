@@ -1,7 +1,16 @@
-"use client"; // This directive tells Next.js this is a client-side component
+"use client";
 
-import { SessionProvider } from "next-auth/react";
+import React from "react";
+import { DemoProvider } from "@/src/lib/demo-context";
+import DemoWelcomeModal from "./DemoWelcomeModal";
+import DemoRoleSwitchModal from "./DemoRoleSwitchModal";
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
-  return <SessionProvider>{children}</SessionProvider>;
+  return (
+    <DemoProvider>
+      <DemoWelcomeModal />
+      <DemoRoleSwitchModal />
+      {children}
+    </DemoProvider>
+  );
 }

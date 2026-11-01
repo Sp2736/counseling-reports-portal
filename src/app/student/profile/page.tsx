@@ -1,113 +1,106 @@
-// src/app/student/profile/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, ShieldCheck, AlertCircle, ArrowLeft, Save } from "lucide-react";
+import { User, ShieldCheck, AlertCircle, ArrowLeft, Save, Sparkles } from "lucide-react";
+import { useDemo } from "@/src/lib/demo-context";
+import { DUMMY_STUDENT } from "@/src/lib/demo-data";
 
 export default function StudentProfilePage() {
   const router = useRouter();
-  
-  const [fullName, setFullName] = useState("");
-  const [studentId, setStudentId] = useState(""); // We keep this read-only
-  const [department, setDepartment] = useState("");
-  const [assignedCounselor, setAssignedCounselor] = useState("");
-  
-  const [counselors, setCounselors] = useState<{_id: string, fullName: string}[]>([]);
-  const [status, setStatus] = useState<"idle" | "loading" | "saving" | "success" | "error">("loading");
+  const { studentProfile, setStudentProfile, counselors } = useDemo();
+
+  const [fullName, setFullName] = useState(studentProfile.fullName);
+  const [department, setDepartment] = useState(studentProfile.department);
+  const [assignedCounselor, setAssignedCounselor] = useState(studentProfile.assignedCounselor);
+
+  const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    fetch("/api/student/profile")
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to load profile data");
-        return res.json();
-      })
-      .then((data) => {
-        setFullName(data.profile.fullName);
-        setStudentId(data.profile.studentId);
-        setDepartment(data.profile.department);
-        setAssignedCounselor(data.profile.assignedCounselor);
-        setCounselors(data.counselors);
-        setStatus("idle");
-      })
-      .catch((err) => {
-        setMessage(err.message);
-        setStatus("error");
-      });
-  }, []);
-
-  const handleUpdateProfile = async (e: React.FormEvent) => {
+  const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("saving");
-    setMessage("");
 
-    try {
-      const res = await fetch("/api/student/profile", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName, department, assignedCounselor }),
-      });
-
-      if (!res.ok) throw new Error("Failed to save changes");
+    setTimeout(() => {
+      const counselorObj = counselors.find((c) => c._id === assignedCounselor);
+      setStudentProfile((prev) => ({
+        ...prev,
+        fullName,
+        department,
+        assignedCounselor,
+        assignedCounselorName: counselorObj?.fullName || "Assigned Counselor",
+      }));
 
       setStatus("success");
-      setMessage("Profile updated successfully!");
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => setStatus("idle"), 3000);
+      setMessage("Profile settings updated successfully!");
 
-    } catch (error: any) {
-      setStatus("error");
-      setMessage(error.message);
-    }
+      setTimeout(() => setStatus("idle"), 3000);
+    }, 350);
   };
 
-  const inputStyles = "w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base";
+  const handleReset = () => {
+    setFullName(DUMMY_STUDENT.fullName);
+    setDepartment(DUMMY_STUDENT.department);
+    setAssignedCounselor(DUMMY_STUDENT.assignedCounselor);
+  };
 
-  if (status === "loading") return <div className="p-4 sm:p-8 text-center text-gray-500">Loading profile...</div>;
+  const inputStyles =
+    "w-full px-3 py-2.5 border border-gray-300 rounded-xl bg-slate-50 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base transition";
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8 pb-24 sm:pb-8">
       <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
-        
         {/* Header */}
         <div className="flex items-center space-x-3 sm:space-x-4 mb-6 sm:mb-8">
-          <button onClick={() => router.push("/student/dashboard")} className="p-1.5 cursor-pointer sm:p-2 bg-white rounded-full shadow-sm hover:bg-gray-100 transition-colors shrink-0">
+          <button
+            onClick={() => router.push("/student/dashboard")}
+            className="p-1.5 cursor-pointer sm:p-2 bg-white rounded-full shadow-sm hover:bg-gray-100 transition shrink-0"
+          >
             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
           </button>
           <div>
-            <h1 className="text-xl sm:text-3xl font-bold text-gray-900">Profile Settings</h1>
-            <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">Manage your personal information and counselor assignment.</p>
+            <h1 className="text-xl sm:text-3xl font-black text-gray-900 tracking-tight">
+              Student Profile Settings
+            </h1>
+            <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">
+              Manage personal details, academic department, and counselor assignment.
+            </p>
           </div>
         </div>
 
-        <div className="bg-white p-5 sm:p-8 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex items-center space-x-2 sm:space-x-3 mb-5 sm:mb-6 border-b border-gray-100 pb-3 sm:pb-4">
-            <User className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Personal Details</h2>
+        <div className="bg-white p-5 sm:p-8 rounded-2xl shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <User className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+                Personal & Academic Details
+              </h2>
+            </div>
+            <button
+              type="button"
+              onClick={handleReset}
+              className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center space-x-1"
+            >
+              <Sparkles className="w-3 h-3" />
+              <span>Reset to Sample</span>
+            </button>
           </div>
 
           {status === "success" && (
-            <div className="mb-5 sm:mb-6 p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-3">
-              <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 shrink-0" />
-              <p className="text-xs sm:text-sm font-medium text-green-800">{message}</p>
-            </div>
-          )}
-
-          {status === "error" && (
-            <div className="mb-5 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-3">
-              <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 shrink-0" />
-              <p className="text-xs sm:text-sm font-medium text-red-800">{message}</p>
+            <div className="mb-5 sm:mb-6 p-3 sm:p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center space-x-3">
+              <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 shrink-0" />
+              <p className="text-xs sm:text-sm font-bold text-emerald-800">{message}</p>
             </div>
           )}
 
           <form onSubmit={handleUpdateProfile} className="space-y-4 sm:space-y-5">
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Full Name</label>
-              <input 
-                type="text" 
-                required 
+              <label className="block text-xs sm:text-sm font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                Full Legal Name
+              </label>
+              <input
+                type="text"
+                required
                 className={inputStyles}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -116,20 +109,24 @@ export default function StudentProfilePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
               <div>
-                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Student ID (Read-Only)</label>
-                <input 
-                  type="text" 
-                  disabled 
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed text-sm sm:text-base"
-                  value={studentId}
+                <label className="block text-xs sm:text-sm font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Student ID (Permanent)
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-gray-100 text-gray-500 font-mono font-bold cursor-not-allowed text-sm sm:text-base"
+                  value={studentProfile.studentId}
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Department</label>
-                <input 
-                  type="text" 
-                  required 
+                <label className="block text-xs sm:text-sm font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Department
+                </label>
+                <input
+                  type="text"
+                  required
                   className={inputStyles}
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
@@ -138,25 +135,28 @@ export default function StudentProfilePage() {
             </div>
 
             <div className="pt-3 sm:pt-4 border-t border-gray-100">
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Assigned Counselor</label>
-              <select 
-                required 
+              <label className="block text-xs sm:text-sm font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                Assigned Faculty Counselor
+              </label>
+              <select
+                required
                 className={inputStyles}
                 value={assignedCounselor}
                 onChange={(e) => setAssignedCounselor(e.target.value)}
               >
-                <option value="" disabled>Select your counselor...</option>
                 {counselors.map((c) => (
-                  <option key={c._id} value={c._id}>{c.fullName}</option>
+                  <option key={c._id} value={c._id}>
+                    {c.fullName} ({c.department})
+                  </option>
                 ))}
               </select>
             </div>
 
             <div className="pt-4 sm:pt-6 flex justify-end">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={status === "saving"}
-                className="w-full sm:w-auto flex justify-center cursor-pointer items-center px-6 py-2.5 bg-indigo-600 text-white rounded-md text-sm sm:text-base font-medium hover:bg-indigo-700 disabled:bg-indigo-400 transition-colors"
+                className="w-full sm:w-auto flex justify-center cursor-pointer items-center px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-sm sm:text-base font-bold hover:bg-indigo-700 disabled:bg-indigo-400 transition shadow-md shadow-indigo-600/20"
               >
                 <Save className="w-4 h-4 mr-2" />
                 {status === "saving" ? "Saving Changes..." : "Save Profile"}
@@ -164,7 +164,6 @@ export default function StudentProfilePage() {
             </div>
           </form>
         </div>
-
       </div>
     </div>
   );

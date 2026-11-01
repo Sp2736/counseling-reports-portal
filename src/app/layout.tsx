@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-import AuthProvider from "./components/AuthProvider"; // Import the wrapper we just made
-
-const inter = Inter({ subsets: ["latin"] });
+import AuthProvider from "./components/AuthProvider";
 
 export const metadata: Metadata = {
-  title: "University AI Counseling Platform",
+  title: "CHARUSAT · DEPSTAR AI Counseling Platform (Demo)",
   description: "Advanced SWOT analysis and student support system.",
 };
 
@@ -17,8 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        {/* Wrap all page content in the AuthProvider */}
+      <body className="font-sans antialiased bg-slate-50 text-slate-800">
         <AuthProvider>
           {children}
         </AuthProvider>

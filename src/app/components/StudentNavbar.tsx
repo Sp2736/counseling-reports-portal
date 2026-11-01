@@ -1,13 +1,13 @@
-// src/components/StudentNavbar.tsx
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
-import { Home, UploadCloud, User, LogOut, University } from "lucide-react";
+import { Home, UploadCloud, User, University, ArrowLeftRight, Sparkles } from "lucide-react";
+import { useDemo } from "@/src/lib/demo-context";
 
 export default function StudentNavbar() {
   const pathname = usePathname();
+  const { requestRoleSwitch } = useDemo();
 
   const links = [
     { name: "Dashboard", href: "/student/dashboard", icon: Home },
@@ -16,30 +16,39 @@ export default function StudentNavbar() {
   ];
 
   return (
-    <nav className="bg-white border-b border-gray-200 print:hidden shadow-sm sticky top-0 z-50">
-      {/* FIX: added 'print:hidden' to prevent navbar being printed in report while exporting */}
+    <nav className="bg-white border-b border-gray-200 print:hidden shadow-sm sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          
-          <div className="flex items-center">
-            <University className="h-8 w-8 text-indigo-600" />
-            <span className="ml-2 text-xl font-bold text-gray-900 tracking-tight hidden sm:block">
-              Student Portal
-            </span>
+        <div className="flex justify-between items-center h-16">
+          {/* Logo & Portal title */}
+          <div className="flex items-center space-x-3">
+            <Link href="/" className="flex items-center group">
+              <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-sm group-hover:bg-indigo-700 transition">
+                <University className="h-5 w-5" />
+              </div>
+              <div className="ml-2.5">
+                <span className="text-base font-black text-gray-900 tracking-tight block leading-tight">
+                  Student Portal
+                </span>
+                <span className="text-[10px] font-semibold text-indigo-600 uppercase tracking-wider block">
+                  CHARUSAT · DEPSTAR
+                </span>
+              </div>
+            </Link>
           </div>
 
-          <div className="hidden sm:flex sm:items-center sm:space-x-8">
+          {/* Desktop Nav Links */}
+          <div className="hidden md:flex md:items-center md:space-x-8">
             {links.map((link) => {
               const Icon = link.icon;
               const isActive = pathname.startsWith(link.href);
-              
+
               return (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors ${
-                    isActive 
-                      ? "border-indigo-500 text-gray-900" 
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors ${
+                    isActive
+                      ? "border-indigo-600 text-indigo-600"
                       : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
                   }`}
                 >
@@ -50,30 +59,41 @@ export default function StudentNavbar() {
             })}
           </div>
 
-          <div className="flex items-center space-x-4">
-            <span className="hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-              Student
+          {/* Role Switcher & Badges */}
+          <div className="flex items-center space-x-3">
+            <span className="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mr-1.5"></span>
+              Student Role
             </span>
+
+            {/* Switch to Faculty button */}
             <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-              title="Log Out"
+              onClick={() => requestRoleSwitch("counselor")}
+              className="inline-flex cursor-pointer items-center space-x-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm hover:shadow active:scale-95"
+              title="Switch to Faculty / Counselor role"
             >
-              <LogOut className="h-5 w-5" />
+              <ArrowLeftRight className="w-3.5 h-3.5 text-indigo-300" />
+              <span>Switch to Faculty</span>
             </button>
           </div>
         </div>
       </div>
-      
+
       {/* Mobile Bottom Bar */}
-      <div className="sm:hidden border-t border-gray-200 bg-gray-50 flex justify-around p-2">
+      <div className="md:hidden border-t border-gray-200 bg-gray-50 flex justify-around p-2">
         {links.map((link) => {
           const Icon = link.icon;
           const isActive = pathname.startsWith(link.href);
           return (
-             <Link key={link.name} href={link.href} className={`flex flex-col items-center p-2 rounded-md ${isActive ? "text-indigo-600" : "text-gray-500 hover:text-gray-900"}`}>
+            <Link
+              key={link.name}
+              href={link.href}
+              className={`flex flex-col items-center p-2 rounded-md ${
+                isActive ? "text-indigo-600 font-bold" : "text-gray-500 hover:text-gray-900"
+              }`}
+            >
               <Icon className="w-5 h-5 mb-1" />
-              <span className="text-[10px] font-medium">{link.name}</span>
+              <span className="text-[10px]">{link.name}</span>
             </Link>
           );
         })}
