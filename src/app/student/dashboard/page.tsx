@@ -22,7 +22,7 @@ export default function StudentDashboard() {
   );
 
   const handlePrint = (reportId: string) => {
-    router.push(`/student/print-report/${reportId}`);
+    router.push(`/student/print-report?id=${reportId}`);
   };
 
   const handleCancelUpload = (reportId: string) => {

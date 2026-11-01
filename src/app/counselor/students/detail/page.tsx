@@ -1,20 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, User, FileText, Calendar } from "lucide-react";
 import Link from "next/link";
 import { useDemo } from "@/src/lib/demo-context";
 
-export default function StudentHistoryClient({ id }: { id: string }) {
+function StudentHistoryContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id") || "";
   const { getStudentById, records } = useDemo();
 
   const [student, setStudent] = useState<any>(null);
   const [studentRecords, setStudentRecords] = useState<any[]>([]);
 
   useEffect(() => {
-    const s = getStudentById(id);
+    const s = getStudentById(id || "stud-live");
     setStudent(s);
     const recs = records.filter(
       (r) =>
@@ -143,7 +145,7 @@ export default function StudentHistoryClient({ id }: { id: string }) {
                       </td>
                       <td className="p-4 text-right">
                         <Link
-                          href={`/counselor/record/${record._id}`}
+                          href={`/counselor/record?id=${record._id}`}
                           className="inline-flex items-center text-xs sm:text-sm font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-3.5 py-1.5 rounded-xl transition"
                         >
                           View Report
@@ -158,6 +160,20 @@ export default function StudentHistoryClient({ id }: { id: string }) {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CounselorStudentHistoryPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-8 text-center text-slate-500 font-medium">
+          Loading Student Profile...
+        </div>
+      }
+    >
+      <StudentHistoryContent />
+    </Suspense>
   );
 }
 

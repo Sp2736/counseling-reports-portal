@@ -279,7 +279,7 @@ export default function CounselorDashboardPage() {
                         ) : record.status === "Needs_Review" ? (
                           <>
                             <Link
-                              href={`/counselor/record/${record._id}`}
+                              href={`/counselor/record?id=${record._id}`}
                               className="inline-flex items-center px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-xs sm:text-sm font-bold transition"
                             >
                               <Bot className="w-3.5 h-3.5 mr-1.5" />
@@ -295,7 +295,7 @@ export default function CounselorDashboardPage() {
                           </>
                         ) : (
                           <Link
-                            href={`/counselor/record/${record._id}`}
+                            href={`/counselor/record?id=${record._id}`}
                             className="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg text-xs sm:text-sm font-medium transition"
                           >
                             <FileText className="w-3.5 h-3.5 mr-1.5" />

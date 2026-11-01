@@ -127,7 +127,7 @@ export default function CounselorStudentsPage() {
 
                       <td className="p-4 text-right whitespace-nowrap">
                         <Link
-                          href={`/counselor/students/${student._id}`}
+                          href={`/counselor/students/detail?id=${student._id}`}
                           className="inline-flex items-center justify-center px-3.5 py-1.5 bg-white border border-gray-200 text-gray-700 hover:text-indigo-700 hover:border-indigo-300 hover:bg-indigo-50 rounded-xl text-xs sm:text-sm font-bold transition shadow-sm"
                         >
                           <span className="mr-1">History</span>

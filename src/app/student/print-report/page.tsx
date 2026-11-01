@@ -1,20 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Printer, ArrowLeft, Bot } from "lucide-react";
 import { useDemo } from "@/src/lib/demo-context";
 import { INITIAL_PIPELINE_RECORDS } from "@/src/lib/demo-data";
 
-export default function PrintReportClient({ id }: { id: string }) {
+function PrintReportContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id") || "";
   const { getRecordById } = useDemo();
 
   const [record, setRecord] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const found = getRecordById(id) || INITIAL_PIPELINE_RECORDS[0];
+    const found = (id ? getRecordById(id) : null) || INITIAL_PIPELINE_RECORDS[0];
     setRecord(found);
     setIsLoading(false);
   }, [id, getRecordById]);
@@ -274,6 +276,20 @@ export default function PrintReportClient({ id }: { id: string }) {
         </div>
       </div>
     </>
+  );
+}
+
+export default function StudentPrintReportPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-8 text-center text-slate-500 font-medium">
+          Loading Document...
+        </div>
+      }
+    >
+      <PrintReportContent />
+    </Suspense>
   );
 }
 

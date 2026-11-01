@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Bot, Save, FileText, Printer } from "lucide-react";
 import { useDemo } from "@/src/lib/demo-context";
 import { INITIAL_PIPELINE_RECORDS } from "@/src/lib/demo-data";
 
-export default function RecordReviewClient({ id }: { id: string }) {
+function RecordReviewContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id") || "";
   const { getRecordById, approveRecord } = useDemo();
 
   const [record, setRecord] = useState<any>(null);
@@ -18,7 +20,7 @@ export default function RecordReviewClient({ id }: { id: string }) {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    const found = getRecordById(id) || INITIAL_PIPELINE_RECORDS[1];
+    const found = (id ? getRecordById(id) : null) || INITIAL_PIPELINE_RECORDS[1];
     setRecord(found);
     if (found?.counselor_review) {
       setRiskLevel(found.counselor_review.final_risk_level || "Low");
@@ -50,7 +52,7 @@ export default function RecordReviewClient({ id }: { id: string }) {
     setIsSaving(true);
 
     setTimeout(() => {
-      approveRecord(id, riskLevel, actionPlan);
+      approveRecord(record?._id || id, riskLevel, actionPlan);
       setIsSaving(false);
       alert("Official Document successfully finalized and shared with the student!");
       router.push("/counselor/waiting-list");
@@ -427,6 +429,20 @@ export default function RecordReviewClient({ id }: { id: string }) {
         </div>
       </div>
     </>
+  );
+}
+
+export default function CounselorRecordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-8 text-center text-slate-500 font-medium">
+          Loading Document Review...
+        </div>
+      }
+    >
+      <RecordReviewContent />
+    </Suspense>
   );
 }
 
