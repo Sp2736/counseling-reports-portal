@@ -32,3 +32,12 @@ At its core, the application integrates with Google's Generative AI (Gemini 2.5 
 * **Database:** MongoDB / Mongoose for flexible, scalable data schemas.
 * **AI Integration:** `@google/generative-ai` processing inputs directly into sanitized, rigorously parsed JSON objects.
 * **Data Flow:** A pure JSON architecture, completely bypassing legacy multipart file-upload libraries to ensure faster, more predictable server-client communication.
+
+
+---
+
+## 📦 Project Snapshot
+
+<!--ARCHIVE_STATS_START-->
+<!-- auto-generated — do not edit manually -->
+<!--ARCHIVE_STATS_END-->
