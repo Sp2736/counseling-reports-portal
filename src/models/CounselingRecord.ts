@@ -25,6 +25,10 @@ const counselingRecordSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  original_submitted_text: {
+    type: String,
+    default: null
+  },
   swot_input: {
     strengths: [{ type: String }],
     weaknesses: [{ type: String }],

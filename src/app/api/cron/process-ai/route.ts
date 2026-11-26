@@ -3,6 +3,18 @@ import { NextResponse } from "next/server";
 import connectToDatabase from "@/src/lib/mongodb";
 import { CounselingRecord } from "@/src/models/CounselingRecord";
 import { analyzeSWOTWithAI } from "@/src/lib/ai-service";
+import { safeEqual } from "@/src/lib/safe-compare";
+
+// Rebuild the analysis text from the structured SWOT arrays when the raw text is absent.
+function buildTextFromSwot(record: any): string {
+  const s = record.swot_input || {};
+  return [
+    `Strengths: ${(s.strengths || []).join(", ") || "None"}`,
+    `Weaknesses: ${(s.weaknesses || []).join(", ") || "None"}`,
+    `Opportunities: ${(s.opportunities || []).join(", ") || "None"}`,
+    `Threats: ${(s.threats || []).join(", ") || "None"}`,
+  ].join("\n");
+}
 
 // Delay helper: Wait 5 seconds between AI calls to respect the 15 RPM Gemini limit
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
@@ -12,8 +24,10 @@ export const maxDuration = 60;
 
 export async function GET(req: Request) {
   // Security check: Ensure only your cron job can trigger this, not random users
-  const authHeader = req.headers.get('authorization');
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  // Fail closed: if CRON_SECRET is not configured, nobody can trigger this endpoint.
+  const secret = process.env.CRON_SECRET;
+  const authHeader = req.headers.get('authorization') ?? '';
+  if (!secret || !safeEqual(authHeader, `Bearer ${secret}`)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -34,7 +48,7 @@ export async function GET(req: Request) {
 
     for (const record of pendingRecords) {
       try {
-        const rawText = record.original_submitted_text;
+        const rawText = record.original_submitted_text || buildTextFromSwot(record);
         
         // 1. Send data to Gemini
         const aiResult = await analyzeSWOTWithAI(rawText);

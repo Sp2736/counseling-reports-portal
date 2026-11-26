@@ -13,10 +13,10 @@ jobs:
     steps:
       - name: Ping Next.js API
         env:
-          # Pulls the secret securely from GitHub settings
+          # Both values live in GitHub repository secrets, never in the code
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
-        # Replace the URL below with your actual live Vercel domain!
+          APP_URL: ${{ secrets.APP_URL }}
         run: |
-          curl -X GET "https://counseling-swot-analysis.vercel.app/api/cron/process-ai" \
+          curl -X GET "$APP_URL/api/cron/process-ai" \
           -H "Authorization: Bearer $CRON_SECRET" \
           --fail
