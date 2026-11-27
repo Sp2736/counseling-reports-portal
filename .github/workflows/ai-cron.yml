@@ -1,11 +1,12 @@
 name: AI Background Processor
 
 on:
-  schedule:
-    # Runs at minute 0 and 30 past every hour (e.g., 10:00, 10:30, 11:00...)
-    - cron: '0,30 * * * *'
+  # Disabled while the project is not in use; uncomment to re-enable 30-minute batches:
+  # schedule:
+  #   # Runs at minute 0 and 30 past every hour (e.g., 10:00, 10:30, 11:00...)
+  #   - cron: '0,30 * * * *'
   # This line adds a button in GitHub so you can test it manually without waiting 30 mins
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   trigger-ai:
